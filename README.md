@@ -1,9 +1,6 @@
 # VisFlow
 ## _A Visual Programming Language For Beginner_
 
-[![N|Solid](https://cldup.com/dTxpPi9lDf.thumb.png)](https://nodesource.com/products/nsolid)
-
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
 VisFlow is a flow based programming language that serves as a tool for learning programming / coding
 
