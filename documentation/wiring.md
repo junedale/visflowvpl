@@ -17,3 +17,8 @@ In the future, socket connection that contains different data type will not be a
 
 ## Wrong way of connecting nodes
 ![](../media/incorrect_wiring.gif)
+
+## Deleting a wire
+1. Hover over a wire to be deleted
+2. Press and Hold CTRL
+3. Click the wire to be deleted
