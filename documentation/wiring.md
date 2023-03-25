@@ -17,6 +17,7 @@ In the future, socket connection that contains different data type will not be a
 
 ## Wrong way of connecting nodes
 ![](../media/incorrect_wiring.gif)
+Th video above demonstrates that connecting different types of port is not allowed
 
 ## Deleting a wire
 1. Hover over a wire to be deleted
