@@ -6,7 +6,7 @@ VisFlow is a flow based programming language that serves as a tool for learning 
 ## Features
 - Functions
 - Custom node
-- Modularity
+- Modular
 - Collapsible node connections - ongoing
 
 ## Tech
