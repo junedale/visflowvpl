@@ -6,7 +6,7 @@ VisFlow is a flow based programming language that serves as a tool for learning 
 ## Features
 - Functions
 - Custom node
-- Modular
+- Modularity
 - Collapsible node connections - ongoing
 
 ## Tech
@@ -17,6 +17,23 @@ VisFlow uses a number of dependencies to work properly
  - CSS
  - Bootstrap
  - JavaScript
+
+## Launching from source
+Since this code is not signed, windows might flag this application as virus. If you don't want to install the application, you can run this application from source
+
+**Requirements**
+- [Nodejs](https://nodejs.org/en)
+- VSCode or any IDE
+
+**Steps for running the application from source**
+1. Clone the repositoty using **git clone** https://github.com/junedale/visflowvpl.git or download the [zip file](https://github.com/junedale/visflowvpl/archive/refs/tags/v1.0.0.zip)
+2. Extract the folder
+3. Open cmd and use the command 
+``` cmd
+cd YOUR_DOWNLOADS_PATH\visflowvpl-1.0.0.zip\visflowvpl-1.0.0
+```
+4. Use the command ```npm install``` to download all dependencies
+5. Use the command ```npm run start``` to start the application
 
 
 ## Documentation
