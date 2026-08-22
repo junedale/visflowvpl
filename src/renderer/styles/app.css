@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --surface-dim: 13 15 20;
+    --surface: 19 22 28;
+    --surface-bright: 42 45 54;
+    --surface-container-lowest: 9 10 14;
+    --surface-container-low: 24 27 34;
+    --surface-container: 31 34 42;
+    --surface-container-high: 40 44 54;
+    --surface-container-highest: 51 55 68;
+    --m3-primary: 168 199 250;
+    --m3-on-primary: 6 46 111;
+    --m3-primary-container: 8 66 160;
+    --m3-on-primary-container: 211 227 253;
+    --m3-secondary: 255 210 121;
+    --m3-on-secondary: 67 44 0;
+    --m3-secondary-container: 96 65 0;
+    --m3-on-secondary-container: 255 224 130;
+    --m3-tertiary: 124 227 162;
+    --m3-on-tertiary: 0 57 25;
+    --m3-tertiary-container: 0 82 39;
+    --m3-on-tertiary-container: 152 251 189;
+    --m3-error: 242 184 181;
+    --m3-on-error: 96 20 16;
+    --m3-error-container: 140 29 24;
+    --m3-on-error-container: 249 222 220;
+    --m3-outline: 140 145 157;
+    --m3-outline-variant: 67 71 78;
+    --m3-on-surface: 226 226 233;
+    --m3-on-surface-variant: 196 198 208;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+    --surface-dim: 216 220 225;
+    --surface: 250 248 253;
+    --surface-bright: 255 251 255;
+    --surface-container-lowest: 255 255 255;
+    --surface-container-low: 244 242 247;
+    --surface-container: 238 236 241;
+    --surface-container-high: 232 230 235;
+    --surface-container-highest: 226 224 229;
+    --m3-primary: 42 76 139;
+    --m3-on-primary: 255 255 255;
+    --m3-primary-container: 216 226 255;
+    --m3-on-primary-container: 0 42 97;
+    --m3-secondary: 111 76 0;
+    --m3-on-secondary: 255 255 255;
+    --m3-secondary-container: 255 224 170;
+    --m3-on-secondary-container: 58 39 0;
+    --m3-tertiary: 0 107 55;
+    --m3-on-tertiary: 255 255 255;
+    --m3-tertiary-container: 148 247 182;
+    --m3-on-tertiary-container: 0 55 25;
+    --m3-error: 186 26 26;
+    --m3-on-error: 255 255 255;
+    --m3-error-container: 255 218 214;
+    --m3-on-error-container: 65 0 2;
+    --m3-outline: 112 118 128;
+    --m3-outline-variant: 194 198 208;
+    --m3-on-surface: 27 28 33;
+    --m3-on-surface-variant: 66 70 78;
+  }
+
+  body {
+    @apply bg-surface text-m3-on-surface font-sans antialiased overflow-hidden;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Canvas surfaces opt out of selection; form controls must remain fully editable. */
+  input, textarea, select, [contenteditable='true'] {
+    user-select: text;
+    -webkit-user-select: text;
+    pointer-events: auto;
+  }
+
+  /* Custom Sleek Dark Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-container-highest rounded-full hover:bg-m3-outline;
+  }
+}
+
+@layer components {
+  /* M3 Elevation State Layers */
+  .m3-surface-container {
+    @apply bg-surface-container border border-surface-container-high shadow-m3-1;
+  }
+
+  .m3-surface-high {
+    @apply bg-surface-container-high border border-surface-container-highest;
+  }
+
+  /* M3 Filled Buttons */
+  .m3-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium text-sm text-m3-on-primary bg-m3-primary hover:bg-opacity-90 active:scale-95 transition-[background-color,box-shadow,transform] shadow-m3-1 hover:shadow-m3-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m3-primary;
+  }
+
+  .m3-btn-tonal {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full font-medium text-xs text-m3-primary bg-surface-container-high hover:bg-surface-container-highest active:scale-95 transition-[background-color,transform] border border-surface-container-highest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m3-primary;
+  }
+
+  .m3-btn-text {
+    @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full font-medium text-xs text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high active:scale-95 transition-[background-color,color,transform] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m3-primary;
+  }
+
+  /* M3 Outlined Inputs */
+  .m3-input {
+    @apply w-full bg-surface-container-low border border-m3-outline-variant text-m3-on-surface rounded-xl px-3 py-2 text-sm focus-visible:outline-none focus-visible:border-m3-primary focus-visible:ring-1 focus-visible:ring-m3-primary transition-[border-color,box-shadow];
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  }
+}
