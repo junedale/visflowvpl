@@ -6,8 +6,10 @@
   import { CodeGenerator } from '../../compiler/generator.js';
   import { GraphValidator } from '../../compiler/validator.js';
   import { globalRunner } from '../../interpreter/runner.js';
+  import { calculateAutoLayout } from '../../canvas/autoLayout.js';
   import NewFileModal from './modals/NewFileModal.svelte';
   import CodeModal from './modals/CodeModal.svelte';
+  import ExamplesModal from './modals/ExamplesModal.svelte';
 
   export let onZoomIn: () => void = () => {};
   export let onZoomOut: () => void = () => {};
@@ -21,6 +23,38 @@
 
   let showNewFileModal = false;
   let showCodeModal = false;
+  let showExamplesModal = false;
+  let selectedSpeed: number = 0; // 0 = Instant, 100 = Fast, 300 = Normal, 800 = Slow, -1 = Step-by-Step
+
+  function handleAutoLayout() {
+    const state = $graphStore;
+    const moves = calculateAutoLayout(state.nodes, state.wires);
+    if (moves.length > 0) {
+      graphStore.updateNodesPosition(moves);
+      showToast('Graph auto-layout beautified!', 'success');
+      setTimeout(() => onFitGraph(), 60);
+    }
+  }
+
+  function handleSpeedChange(newSpeed: number) {
+    selectedSpeed = newSpeed;
+    consoleStore.setExecutionSpeed(newSpeed);
+    globalRunner.setSpeed(newSpeed);
+  }
+
+  function handleStepNext() {
+    globalRunner.stepNext();
+  }
+
+  function handleTogglePause() {
+    if ($consoleStore.isPaused) {
+      consoleStore.setPaused(false);
+      globalRunner.resume();
+    } else {
+      consoleStore.setPaused(true);
+      globalRunner.pause();
+    }
+  }
 
   async function handleSave() {
     const { position, scale } = getStageTransform();
@@ -41,20 +75,34 @@
     const warnings = validationIssues.filter((i) => i.type === 'warning');
     warnings.forEach((w) => showToast(w.message, 'warning'));
 
+    // Include debug steps if non-zero speed or step-by-step mode
+    const needsDebugSteps = selectedSpeed !== 0;
     const generator = new CodeGenerator(state.nodes, state.wires, state.variables, state.functions);
-    const code = generator.generate();
+    const code = generator.generate(needsDebugSteps);
 
     consoleStore.setGeneratedCode(code);
     consoleStore.clear();
     consoleStore.setRunning(true);
-    consoleStore.log(`[VisFlow] Starting execution...`, 'info');
+    consoleStore.log(`[VisFlow] Starting execution (${selectedSpeed === 0 ? 'Instant' : selectedSpeed === -1 ? 'Step-by-step' : `${selectedSpeed}ms/step`})...`, 'info');
 
     const result = await globalRunner.run(code, {
+      speedMs: selectedSpeed,
       onOutput: (chunk) => consoleStore.log(chunk, 'stdout'),
       onError: (err) => consoleStore.log(err, 'stderr'),
+      onNodeStep: (nodeId, env) => {
+        consoleStore.setActiveNodeId(nodeId);
+        consoleStore.setWatchedVariables(env);
+      },
+      onVariableChange: (name, val) => {
+        consoleStore.setVariableValue(name, val);
+      },
+      onPromptInput: (promptText) => {
+        consoleStore.setAwaitingInput(true, promptText);
+      },
     });
 
     consoleStore.setRunning(false);
+    consoleStore.setActiveNodeId(null);
     consoleStore.setExecutionTime(result.executionTimeMs);
 
     if (result.success) {
@@ -75,6 +123,7 @@
   function handleStop() {
     globalRunner.stop();
     consoleStore.setRunning(false);
+    consoleStore.setActiveNodeId(null);
     consoleStore.log(`[VisFlow] Execution stopped by user.`, 'warning');
   }
 </script>
@@ -193,7 +242,14 @@
           on:click={onFitGraph}
         >
           Fit
-      </button>
+        </button>
+        <button
+          class="px-2 h-7 flex items-center justify-center text-[11px] font-medium text-m3-primary hover:bg-m3-primary/10 rounded-full transition-[background-color,color] focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary"
+          title="Auto-layout and beautify graph organization"
+          on:click={handleAutoLayout}
+        >
+          📐 Beautify
+        </button>
         <button
           class="w-7 h-7 flex items-center justify-center font-bold rounded-full text-m3-on-surface hover:bg-surface-container-high active:scale-95 transition-[background-color,transform] focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary"
           title="Zoom In"
@@ -203,13 +259,62 @@
         +
       </button>
     </div>
+
+    <!-- Examples & Templates Gallery Button -->
+    <button
+      class="px-3 py-1 text-xs font-semibold rounded-full bg-m3-primary/10 hover:bg-m3-primary/20 text-m3-primary border border-m3-primary/30 active:scale-95 transition-all flex items-center gap-1.5"
+      on:click={() => (showExamplesModal = true)}
+      title="Open Starter Examples & Mini-Games Gallery"
+    >
+      <span>✨</span>
+      <span>Examples</span>
+    </button>
   </div>
 
   <!-- Right: Execution & Modals -->
-    <div class="flex items-center gap-1.5 shrink-0">
+  <div class="flex items-center gap-1.5 shrink-0">
+    <!-- Execution Speed Selector -->
+    <div class="flex items-center bg-surface-container-low rounded-full px-2 py-0.5 border border-m3-outline-variant/30 text-xs">
+      <span class="text-[10px] text-m3-outline mr-1 font-medium">Speed:</span>
+      <select
+        class="bg-transparent text-xs text-m3-on-surface focus:outline-none cursor-pointer pr-1"
+        value={selectedSpeed}
+        on:change={(e) => handleSpeedChange(Number(e.currentTarget.value))}
+      >
+        <option value={0} class="bg-surface-container text-m3-on-surface">⚡ Instant</option>
+        <option value={100} class="bg-surface-container text-m3-on-surface">🐇 100ms</option>
+        <option value={300} class="bg-surface-container text-m3-on-surface">⏱ 300ms</option>
+        <option value={800} class="bg-surface-container text-m3-on-surface">🐢 800ms</option>
+        <option value={-1} class="bg-surface-container text-m3-on-surface">⏭ Step-by-Step</option>
+      </select>
+    </div>
+
+    <!-- Stepping & Pause Controls (visible when running with debug delay or step mode) -->
+    {#if $consoleStore.isRunning}
+      {#if selectedSpeed !== 0}
+        <button
+          class="px-2.5 py-1 rounded-full text-xs font-semibold {$consoleStore.isPaused ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-surface-container-high text-m3-on-surface'} hover:bg-surface-container-highest active:scale-95 transition-all flex items-center gap-1"
+          on:click={handleTogglePause}
+          title={$consoleStore.isPaused ? 'Resume Execution' : 'Pause Execution'}
+        >
+          <span>{$consoleStore.isPaused ? '▶ Resume' : '⏸ Pause'}</span>
+        </button>
+
+        {#if selectedSpeed === -1 || $consoleStore.isPaused}
+          <button
+            class="px-2.5 py-1 rounded-full text-xs font-semibold bg-m3-tertiary-container text-m3-on-tertiary-container hover:bg-m3-tertiary-container/80 active:scale-95 transition-all flex items-center gap-1 border border-m3-tertiary/40"
+            on:click={handleStepNext}
+            title="Step to next node"
+          >
+            <span>⏭ Step Next</span>
+          </button>
+        {/if}
+      {/if}
+    {/if}
+
     <!-- View Code Button -->
-      <button
-        class="hidden sm:inline-flex px-3 py-1.5 rounded-full text-xs font-medium text-m3-primary border border-m3-primary/30 hover:bg-m3-primary/10 active:scale-95 transition-[background-color,transform] focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary"
+    <button
+      class="hidden sm:inline-flex px-3 py-1.5 rounded-full text-xs font-medium text-m3-primary border border-m3-primary/30 hover:bg-m3-primary/10 active:scale-95 transition-[background-color,transform] focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary"
       on:click={handleShowCode}
     >
       Code
@@ -256,9 +361,21 @@
         </svg>
         <span>Run</span>
       </button>
+
+      <button
+        class="w-8 h-8 inline-flex items-center justify-center rounded-full text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary"
+        on:click={onToggleTheme}
+        aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+        title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+      >
+        {theme === 'dark' ? '☀' : '◐'}
+      </button>
     {/if}
   </div>
 </header>
 
 <NewFileModal bind:show={showNewFileModal} />
 <CodeModal bind:show={showCodeModal} />
+{#if showExamplesModal}
+  <ExamplesModal onClose={() => (showExamplesModal = false)} />
+{/if}

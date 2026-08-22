@@ -22,6 +22,22 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'dist'),
     emptyOutDir: true,
     target: 'esnext',
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/konva')) {
+            return 'vendor-konva';
+          }
+          if (id.includes('node_modules/antlr4ng')) {
+            return 'vendor-antlr';
+          }
+          if (id.includes('node_modules/svelte')) {
+            return 'vendor-svelte';
+          }
+        },
+      },
+    },
   },
   server: {
     port: 5173,

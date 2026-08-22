@@ -10,6 +10,12 @@ export interface ConsoleLog {
 export interface ConsoleState {
   isOpen: boolean;
   isRunning: boolean;
+  isPaused: boolean;
+  activeNodeId: string | null;
+  watchedVariables: Record<string, any>;
+  awaitingInput: boolean;
+  inputPrompt: string;
+  executionSpeedMs: number;
   logs: ConsoleLog[];
   executionTime: number;
   lastGeneratedCode: string;
@@ -18,6 +24,12 @@ export interface ConsoleState {
 const initialState: ConsoleState = {
   isOpen: false,
   isRunning: false,
+  isPaused: false,
+  activeNodeId: null,
+  watchedVariables: {},
+  awaitingInput: false,
+  inputPrompt: '',
+  executionSpeedMs: 0,
   logs: [],
   executionTime: 0,
   lastGeneratedCode: '',
@@ -36,7 +48,46 @@ function createConsoleStore() {
     },
 
     setRunning: (running: boolean) => {
-      update((s) => ({ ...s, isRunning: running, isOpen: running ? true : s.isOpen }));
+      update((s) => ({
+        ...s,
+        isRunning: running,
+        isPaused: false,
+        activeNodeId: running ? s.activeNodeId : null,
+        awaitingInput: running ? s.awaitingInput : false,
+        isOpen: running ? true : s.isOpen,
+      }));
+    },
+
+    setPaused: (paused: boolean) => {
+      update((s) => ({ ...s, isPaused: paused }));
+    },
+
+    setActiveNodeId: (nodeId: string | null) => {
+      update((s) => ({ ...s, activeNodeId: nodeId }));
+    },
+
+    setWatchedVariables: (vars: Record<string, any>) => {
+      update((s) => ({ ...s, watchedVariables: { ...vars } }));
+    },
+
+    setVariableValue: (name: string, value: any) => {
+      update((s) => ({
+        ...s,
+        watchedVariables: { ...s.watchedVariables, [name]: value },
+      }));
+    },
+
+    setAwaitingInput: (awaiting: boolean, prompt: string = '') => {
+      update((s) => ({
+        ...s,
+        awaitingInput: awaiting,
+        inputPrompt: prompt,
+        isOpen: awaiting ? true : s.isOpen,
+      }));
+    },
+
+    setExecutionSpeed: (speedMs: number) => {
+      update((s) => ({ ...s, executionSpeedMs: speedMs }));
     },
 
     log: (text: string, type: 'stdout' | 'stderr' | 'info' | 'success' = 'stdout') => {
@@ -61,7 +112,14 @@ function createConsoleStore() {
     },
 
     clear: () => {
-      update((s) => ({ ...s, logs: [], executionTime: 0 }));
+      update((s) => ({
+        ...s,
+        logs: [],
+        executionTime: 0,
+        activeNodeId: null,
+        watchedVariables: {},
+        awaitingInput: false,
+      }));
     },
   };
 }

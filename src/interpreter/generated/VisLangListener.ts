@@ -25,8 +25,10 @@ import { ReturnStatementContext } from "./VisLangParser.js";
 import { IdentifierContext } from "./VisLangParser.js";
 import { BinaryMulContext } from "./VisLangParser.js";
 import { ComparisonContext } from "./VisLangParser.js";
+import { ArrayLiteralContext } from "./VisLangParser.js";
 import { IntLiteralContext } from "./VisLangParser.js";
 import { LogicalAndContext } from "./VisLangParser.js";
+import { IndexAccessContext } from "./VisLangParser.js";
 import { FunCallExprContext } from "./VisLangParser.js";
 import { AssignActionContext } from "./VisLangParser.js";
 import { NullContext } from "./VisLangParser.js";
@@ -39,7 +41,8 @@ import { BooleanLiteralContext } from "./VisLangParser.js";
 import { EqualityContext } from "./VisLangParser.js";
 import { UnaryNotContext } from "./VisLangParser.js";
 import { BinaryAddContext } from "./VisLangParser.js";
-import { AssignmentContext } from "./VisLangParser.js";
+import { ArrayAssignmentContext } from "./VisLangParser.js";
+import { VariableAssignmentContext } from "./VisLangParser.js";
 
 
 /**
@@ -278,6 +281,18 @@ export class VisLangListener implements ParseTreeListener {
      */
     exitComparison?: (ctx: ComparisonContext) => void;
     /**
+     * Enter a parse tree produced by the `arrayLiteral`
+     * labeled alternative in `VisLangParser.expr`.
+     * @param ctx the parse tree
+     */
+    enterArrayLiteral?: (ctx: ArrayLiteralContext) => void;
+    /**
+     * Exit a parse tree produced by the `arrayLiteral`
+     * labeled alternative in `VisLangParser.expr`.
+     * @param ctx the parse tree
+     */
+    exitArrayLiteral?: (ctx: ArrayLiteralContext) => void;
+    /**
      * Enter a parse tree produced by the `intLiteral`
      * labeled alternative in `VisLangParser.expr`.
      * @param ctx the parse tree
@@ -301,6 +316,18 @@ export class VisLangListener implements ParseTreeListener {
      * @param ctx the parse tree
      */
     exitLogicalAnd?: (ctx: LogicalAndContext) => void;
+    /**
+     * Enter a parse tree produced by the `indexAccess`
+     * labeled alternative in `VisLangParser.expr`.
+     * @param ctx the parse tree
+     */
+    enterIndexAccess?: (ctx: IndexAccessContext) => void;
+    /**
+     * Exit a parse tree produced by the `indexAccess`
+     * labeled alternative in `VisLangParser.expr`.
+     * @param ctx the parse tree
+     */
+    exitIndexAccess?: (ctx: IndexAccessContext) => void;
     /**
      * Enter a parse tree produced by the `funCallExpr`
      * labeled alternative in `VisLangParser.expr`.
@@ -446,15 +473,29 @@ export class VisLangListener implements ParseTreeListener {
      */
     exitBinaryAdd?: (ctx: BinaryAddContext) => void;
     /**
-     * Enter a parse tree produced by `VisLangParser.assignment`.
+     * Enter a parse tree produced by the `arrayAssignment`
+     * labeled alternative in `VisLangParser.assignment`.
      * @param ctx the parse tree
      */
-    enterAssignment?: (ctx: AssignmentContext) => void;
+    enterArrayAssignment?: (ctx: ArrayAssignmentContext) => void;
     /**
-     * Exit a parse tree produced by `VisLangParser.assignment`.
+     * Exit a parse tree produced by the `arrayAssignment`
+     * labeled alternative in `VisLangParser.assignment`.
      * @param ctx the parse tree
      */
-    exitAssignment?: (ctx: AssignmentContext) => void;
+    exitArrayAssignment?: (ctx: ArrayAssignmentContext) => void;
+    /**
+     * Enter a parse tree produced by the `variableAssignment`
+     * labeled alternative in `VisLangParser.assignment`.
+     * @param ctx the parse tree
+     */
+    enterVariableAssignment?: (ctx: VariableAssignmentContext) => void;
+    /**
+     * Exit a parse tree produced by the `variableAssignment`
+     * labeled alternative in `VisLangParser.assignment`.
+     * @param ctx the parse tree
+     */
+    exitVariableAssignment?: (ctx: VariableAssignmentContext) => void;
 
     visitTerminal(node: TerminalNode): void {}
     visitErrorNode(node: ErrorNode): void {}

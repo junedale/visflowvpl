@@ -56,7 +56,7 @@ export class CodeGenerator {
     });
   }
 
-  public generate(): string {
+  public generate(includeDebugSteps: boolean = false): string {
     let script = '';
 
     // 1. Declare and initialize global variables
@@ -82,7 +82,7 @@ export class CodeGenerator {
       funScript += `fun ${f.name}(${f.params.map((p) => p.name).join(', ')}) {\n`;
       if (f.nodes && f.nodes.length > 0) {
         const subGenerator = new CodeGenerator(f.nodes, f.wires || [], [], []);
-        const bodyCode = subGenerator.generateBodyOnly();
+        const bodyCode = subGenerator.generateBodyOnly(includeDebugSteps);
         funScript += this.indent(bodyCode);
       }
       funScript += `}\n\n`;
@@ -98,7 +98,7 @@ export class CodeGenerator {
       const nextPort = Object.values(startNode.next || {})[0];
       if (nextPort) {
         const nextNode = this.getNextNode(nextPort.id);
-        bodyScript = this.traverseExecutionFlow(nextNode);
+        bodyScript = this.traverseExecutionFlow(nextNode, includeDebugSteps);
       }
     }
 
@@ -106,7 +106,7 @@ export class CodeGenerator {
     return script.trim();
   }
 
-  public generateBodyOnly(): string {
+  public generateBodyOnly(includeDebugSteps: boolean = false): string {
     const startNode = this.nodes.find(
       (n) => n.title.toLowerCase().startsWith('entry') || n.title.toLowerCase() === 'start' || n.category === 'start'
     );
@@ -116,7 +116,7 @@ export class CodeGenerator {
       const nextPort = Object.values(startNode.next || {})[0];
       if (nextPort) {
         const nextNode = this.getNextNode(nextPort.id);
-        body = this.traverseExecutionFlow(nextNode);
+        body = this.traverseExecutionFlow(nextNode, includeDebugSteps);
       }
     }
 
@@ -126,6 +126,9 @@ export class CodeGenerator {
       if (returnNode) {
         const inputPorts = Object.values(returnNode.input || {});
         const retVal = this.parseInputPort(inputPorts[0]);
+        if (includeDebugSteps) {
+          body += `__step__("${returnNode.id}");\n`;
+        }
         body += `return ${retVal};\n`;
       }
     }
@@ -133,10 +136,13 @@ export class CodeGenerator {
     return body;
   }
 
-  private traverseExecutionFlow(node: NodeData | null): string {
+  private traverseExecutionFlow(node: NodeData | null, includeDebugSteps: boolean = false): string {
     if (!node) return '';
 
     let code = '';
+    if (includeDebugSteps && node.category !== 'start') {
+      code += `__step__("${node.id}");\n`;
+    }
     const nextPorts = Object.values(node.next || {});
     const inputPorts = Object.values(node.input || {});
     const normTitle = node.title.toLowerCase().replace(/\s+/g, '');
@@ -151,6 +157,118 @@ export class CodeGenerator {
         case 'println':
           code += `println(${this.parseInputPort(inputPorts[0])});\n`;
           code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id));
+          break;
+
+        case 'input':
+        case 'inputprompt':
+          code += `input(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id));
+          break;
+
+        case 'sleep':
+        case 'sleep(ms)':
+        case 'sleep/delay':
+          code += `sleep(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id));
+          break;
+
+        case 'arrayset':
+        case 'setarrayitem':
+        case 'setitem[i]':
+          code += `${this.parseInputPort(inputPorts[0])}[${this.parseInputPort(inputPorts[1])}] = ${this.parseInputPort(inputPorts[2])};\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id));
+          break;
+
+        case 'arraypush':
+          code += `push(${this.parseInputPort(inputPorts[0])}, ${this.parseInputPort(inputPorts[1])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id));
+          break;
+
+        case 'arraypop':
+          code += `pop(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id));
+          break;
+
+        // Turtle Graphics
+        case 'forward':
+          code += `forward(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'backward':
+          code += `backward(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'turnright':
+          code += `turnRight(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'turnleft':
+          code += `turnLeft(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'pendown':
+          code += `penDown();\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'penup':
+          code += `penUp();\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'setpencolor':
+        case 'pencolor':
+          code += `setPenColor(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'setpensize':
+        case 'pensize':
+          code += `setPenSize(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'drawcircle':
+          code += `drawCircle(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'drawrect':
+        case 'drawrectangle':
+          code += `drawRect(${this.parseInputPort(inputPorts[0])}, ${this.parseInputPort(inputPorts[1])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'clearcanvas':
+          code += `clearCanvas();\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'resetturtle':
+          code += `resetTurtle();\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        // WebAudio Sound & Notes
+        case 'playtone':
+          code += `playTone(${this.parseInputPort(inputPorts[0])}, ${this.parseInputPort(inputPorts[1])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'playnote':
+          code += `playNote(${this.parseInputPort(inputPorts[0])}, ${this.parseInputPort(inputPorts[1])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
+          break;
+
+        case 'playsound':
+        case 'playsoundfx':
+        case 'playsfx':
+          code += `playSound(${this.parseInputPort(inputPorts[0])});\n`;
+          code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id), includeDebugSteps);
           break;
 
         case 'ifelse':
@@ -209,6 +327,8 @@ export class CodeGenerator {
       const funCall = this.parseFunctionCall(node);
       code += `${funCall};\n`;
       code += this.traverseExecutionFlow(this.getNextNode(nextPorts[0]?.id));
+    } else if (node.type === 'comment') {
+      // Comments are skipped in execution flow
     }
 
     return code;
@@ -223,7 +343,13 @@ export class CodeGenerator {
       const rawVal = port.value !== undefined && port.value !== null ? String(port.value) : '';
       if (port.dataType === 'string') return `"${rawVal}"`;
       if (port.dataType === 'boolean') return rawVal === 'true' ? 'true' : 'false';
+      if (port.dataType === 'array' && Array.isArray(port.value)) {
+        return `[${port.value.map((v) => (typeof v === 'string' ? `"${v}"` : String(v))).join(', ')}]`;
+      }
       if (rawVal === '') return '0';
+      if (isNaN(Number(rawVal)) && rawVal !== 'true' && rawVal !== 'false' && !rawVal.startsWith('"') && !rawVal.startsWith('[')) {
+        return `"${rawVal}"`;
+      }
       return rawVal;
     }
 
@@ -240,6 +366,7 @@ export class CodeGenerator {
 
     if (sourceNode.type === 'core') {
       switch (norm) {
+        // Arithmetic
         case 'add':
           return `(${this.parseInputPort(sourceInputs[0])} + ${this.parseInputPort(sourceInputs[1])})`;
         case 'subtract':
@@ -250,6 +377,64 @@ export class CodeGenerator {
           return `(${this.parseInputPort(sourceInputs[0])} / ${this.parseInputPort(sourceInputs[1])})`;
         case 'modulo':
           return `(${this.parseInputPort(sourceInputs[0])} % ${this.parseInputPort(sourceInputs[1])})`;
+
+        // Math builtins
+        case 'random':
+        case 'random(min,max)':
+          return `random(${this.parseInputPort(sourceInputs[0])}, ${this.parseInputPort(sourceInputs[1])})`;
+        case 'round':
+          return `round(${this.parseInputPort(sourceInputs[0])})`;
+        case 'floor':
+          return `floor(${this.parseInputPort(sourceInputs[0])})`;
+        case 'ceil':
+          return `ceil(${this.parseInputPort(sourceInputs[0])})`;
+        case 'abs':
+        case 'absolutevalue':
+          return `abs(${this.parseInputPort(sourceInputs[0])})`;
+        case 'min':
+          return `min(${this.parseInputPort(sourceInputs[0])}, ${this.parseInputPort(sourceInputs[1])})`;
+        case 'max':
+          return `max(${this.parseInputPort(sourceInputs[0])}, ${this.parseInputPort(sourceInputs[1])})`;
+        case 'power':
+        case 'power(a^b)':
+          return `power(${this.parseInputPort(sourceInputs[0])}, ${this.parseInputPort(sourceInputs[1])})`;
+        case 'sqrt':
+        case 'squareroot':
+          return `sqrt(${this.parseInputPort(sourceInputs[0])})`;
+
+        // Strings
+        case 'concat':
+        case 'concatstrings':
+          return `concat(${this.parseInputPort(sourceInputs[0])}, ${this.parseInputPort(sourceInputs[1])})`;
+        case 'stringlength':
+          return `length(${this.parseInputPort(sourceInputs[0])})`;
+        case 'substring':
+          return `substring(${this.parseInputPort(sourceInputs[0])}, ${this.parseInputPort(sourceInputs[1])}, ${this.parseInputPort(sourceInputs[2])})`;
+        case 'toupper':
+        case 'touppercase':
+          return `toUpper(${this.parseInputPort(sourceInputs[0])})`;
+        case 'tolower':
+        case 'tolowercase':
+          return `toLower(${this.parseInputPort(sourceInputs[0])})`;
+
+        // Arrays
+        case 'createarray':
+          return `[${sourceInputs.map((i) => this.parseInputPort(i)).join(', ')}]`;
+        case 'arrayget':
+        case 'getitem[i]':
+        case 'getarrayitem':
+          return `(${this.parseInputPort(sourceInputs[0])}[${this.parseInputPort(sourceInputs[1])}])`;
+        case 'arraylength':
+          return `length(${this.parseInputPort(sourceInputs[0])})`;
+        case 'arraypop':
+          return `pop(${this.parseInputPort(sourceInputs[0])})`;
+
+        // I/O
+        case 'input':
+        case 'inputprompt':
+          return `input(${this.parseInputPort(sourceInputs[0])})`;
+
+        // Logic & Comparison
         case 'greaterthan':
           return `(${this.parseInputPort(sourceInputs[0])} > ${this.parseInputPort(sourceInputs[1])})`;
         case 'lessthan':
@@ -268,6 +453,10 @@ export class CodeGenerator {
           return `(${this.parseInputPort(sourceInputs[0])} or ${this.parseInputPort(sourceInputs[1])})`;
         case 'not':
           return `!(${this.parseInputPort(sourceInputs[0])})`;
+        case 'contains':
+          return `contains(${this.parseInputPort(sourceInputs[0])}, ${this.parseInputPort(sourceInputs[1])})`;
+
+        // Constants
         case 'number':
           return this.parseInputPort(sourceInputs[0]);
         case 'string':

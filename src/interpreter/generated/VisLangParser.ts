@@ -16,47 +16,49 @@ export class VisLangParser extends antlr.Parser {
     public static readonly Rparen = 2;
     public static readonly Lbrace = 3;
     public static readonly Rbrace = 4;
-    public static readonly Comma = 5;
-    public static readonly Colon = 6;
-    public static readonly Semicolon = 7;
-    public static readonly Not = 8;
-    public static readonly Mul = 9;
-    public static readonly Div = 10;
-    public static readonly Mod = 11;
-    public static readonly Add = 12;
-    public static readonly Sub = 13;
-    public static readonly Langle = 14;
-    public static readonly Rangle = 15;
-    public static readonly Leq = 16;
-    public static readonly Req = 17;
-    public static readonly Eqeq = 18;
-    public static readonly Neq = 19;
-    public static readonly Assign = 20;
-    public static readonly Add_Assign = 21;
-    public static readonly Sub_Assign = 22;
-    public static readonly Mul_Assign = 23;
-    public static readonly Div_Assign = 24;
-    public static readonly Mod_Assign = 25;
-    public static readonly Fun = 26;
-    public static readonly If = 27;
-    public static readonly Else = 28;
-    public static readonly For = 29;
-    public static readonly Do = 30;
-    public static readonly While = 31;
-    public static readonly Print = 32;
-    public static readonly Println = 33;
-    public static readonly Return = 34;
-    public static readonly In = 35;
-    public static readonly And = 36;
-    public static readonly Or = 37;
-    public static readonly Null = 38;
-    public static readonly Boolean = 39;
-    public static readonly String = 40;
-    public static readonly Integer = 41;
-    public static readonly Double = 42;
-    public static readonly Comment = 43;
-    public static readonly Identifier = 44;
-    public static readonly Whitespace = 45;
+    public static readonly Lbracket = 5;
+    public static readonly Rbracket = 6;
+    public static readonly Comma = 7;
+    public static readonly Colon = 8;
+    public static readonly Semicolon = 9;
+    public static readonly Not = 10;
+    public static readonly Mul = 11;
+    public static readonly Div = 12;
+    public static readonly Mod = 13;
+    public static readonly Add = 14;
+    public static readonly Sub = 15;
+    public static readonly Langle = 16;
+    public static readonly Rangle = 17;
+    public static readonly Leq = 18;
+    public static readonly Req = 19;
+    public static readonly Eqeq = 20;
+    public static readonly Neq = 21;
+    public static readonly Assign = 22;
+    public static readonly Add_Assign = 23;
+    public static readonly Sub_Assign = 24;
+    public static readonly Mul_Assign = 25;
+    public static readonly Div_Assign = 26;
+    public static readonly Mod_Assign = 27;
+    public static readonly Fun = 28;
+    public static readonly If = 29;
+    public static readonly Else = 30;
+    public static readonly For = 31;
+    public static readonly Do = 32;
+    public static readonly While = 33;
+    public static readonly Print = 34;
+    public static readonly Println = 35;
+    public static readonly Return = 36;
+    public static readonly In = 37;
+    public static readonly And = 38;
+    public static readonly Or = 39;
+    public static readonly Null = 40;
+    public static readonly Boolean = 41;
+    public static readonly String = 42;
+    public static readonly Integer = 43;
+    public static readonly Double = 44;
+    public static readonly Comment = 45;
+    public static readonly Identifier = 46;
+    public static readonly Whitespace = 47;
     public static readonly RULE_program = 0;
     public static readonly RULE_body = 1;
     public static readonly RULE_declaration = 2;
@@ -79,21 +81,21 @@ export class VisLangParser extends antlr.Parser {
     public static readonly RULE_assignment = 19;
 
     public static readonly literalNames = [
-        null, "'('", "')'", "'{'", "'}'", "','", "':'", "';'", "'!'", "'*'", 
-        "'/'", "'%'", "'+'", "'-'", "'<'", "'>'", "'<='", "'>='", "'=='", 
-        "'!='", "'='", "'+='", "'-='", "'*='", "'/='", "'%='", "'fun'", 
-        "'if'", "'else'", "'for'", "'do'", "'while'", "'print'", "'println'", 
-        "'return'", "'in'", "'and'", "'or'", "'null'"
+        null, "'('", "')'", "'{'", "'}'", "'['", "']'", "','", "':'", "';'", 
+        "'!'", "'*'", "'/'", "'%'", "'+'", "'-'", "'<'", "'>'", "'<='", 
+        "'>='", "'=='", "'!='", "'='", "'+='", "'-='", "'*='", "'/='", "'%='", 
+        "'fun'", "'if'", "'else'", "'for'", "'do'", "'while'", "'print'", 
+        "'println'", "'return'", "'in'", "'and'", "'or'", "'null'"
     ];
 
     public static readonly symbolicNames = [
-        null, "Lparen", "Rparen", "Lbrace", "Rbrace", "Comma", "Colon", 
-        "Semicolon", "Not", "Mul", "Div", "Mod", "Add", "Sub", "Langle", 
-        "Rangle", "Leq", "Req", "Eqeq", "Neq", "Assign", "Add_Assign", "Sub_Assign", 
-        "Mul_Assign", "Div_Assign", "Mod_Assign", "Fun", "If", "Else", "For", 
-        "Do", "While", "Print", "Println", "Return", "In", "And", "Or", 
-        "Null", "Boolean", "String", "Integer", "Double", "Comment", "Identifier", 
-        "Whitespace"
+        null, "Lparen", "Rparen", "Lbrace", "Rbrace", "Lbracket", "Rbracket", 
+        "Comma", "Colon", "Semicolon", "Not", "Mul", "Div", "Mod", "Add", 
+        "Sub", "Langle", "Rangle", "Leq", "Req", "Eqeq", "Neq", "Assign", 
+        "Add_Assign", "Sub_Assign", "Mul_Assign", "Div_Assign", "Mod_Assign", 
+        "Fun", "If", "Else", "For", "Do", "While", "Print", "Println", "Return", 
+        "In", "And", "Or", "Null", "Boolean", "String", "Integer", "Double", 
+        "Comment", "Identifier", "Whitespace"
     ];
     public static readonly ruleNames = [
         "program", "body", "declaration", "funDecl", "params", "statement", 
@@ -181,7 +183,7 @@ export class VisLangParser extends antlr.Parser {
                 this.state = 50;
                 this.errorHandler.sync(this);
                 _la = this.tokenStream.LA(1);
-            } while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 3959431426) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & 6083) !== 0));
+            } while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2952823842) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & 24335) !== 0));
             }
         }
         catch (re) {
@@ -236,7 +238,7 @@ export class VisLangParser extends antlr.Parser {
             this.state = 58;
             this.errorHandler.sync(this);
             _la = this.tokenStream.LA(1);
-            if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 8450) !== 0) || ((((_la - 38)) & ~0x1F) === 0 && ((1 << (_la - 38)) & 95) !== 0)) {
+            if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 33826) !== 0) || ((((_la - 40)) & ~0x1F) === 0 && ((1 << (_la - 40)) & 95) !== 0)) {
                 {
                 this.state = 57;
                 this.params();
@@ -436,7 +438,7 @@ export class VisLangParser extends antlr.Parser {
             this.state = 103;
             this.errorHandler.sync(this);
             _la = this.tokenStream.LA(1);
-            if (_la === 28) {
+            if (_la === 30) {
                 {
                 this.state = 102;
                 this.elseStat();
@@ -670,7 +672,7 @@ export class VisLangParser extends antlr.Parser {
             this.match(VisLangParser.In);
             this.state = 153;
             _la = this.tokenStream.LA(1);
-            if(!(_la === 41 || _la === 44)) {
+            if(!(_la === 43 || _la === 46)) {
             this.errorHandler.recoverInline(this);
             }
             else {
@@ -758,7 +760,7 @@ export class VisLangParser extends antlr.Parser {
                 this.state = 166;
                 this.errorHandler.sync(this);
                 _la = this.tokenStream.LA(1);
-                if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 8450) !== 0) || ((((_la - 38)) & ~0x1F) === 0 && ((1 << (_la - 38)) & 95) !== 0)) {
+                if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 33826) !== 0) || ((((_la - 40)) & ~0x1F) === 0 && ((1 << (_la - 40)) & 95) !== 0)) {
                     {
                     this.state = 165;
                     this.expr(0);
@@ -780,7 +782,7 @@ export class VisLangParser extends antlr.Parser {
                 this.state = 172;
                 this.errorHandler.sync(this);
                 _la = this.tokenStream.LA(1);
-                if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 8450) !== 0) || ((((_la - 38)) & ~0x1F) === 0 && ((1 << (_la - 38)) & 95) !== 0)) {
+                if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 33826) !== 0) || ((((_la - 40)) & ~0x1F) === 0 && ((1 << (_la - 40)) & 95) !== 0)) {
                     {
                     this.state = 171;
                     this.expr(0);
@@ -811,6 +813,7 @@ export class VisLangParser extends antlr.Parser {
     public funCall(): FunCallContext {
         let localContext = new FunCallContext(this.context, this.state);
         this.enterRule(localContext, 30, VisLangParser.RULE_funCall);
+        let _la: number;
         try {
             this.enterOuterAlt(localContext, 1);
             {
@@ -818,9 +821,17 @@ export class VisLangParser extends antlr.Parser {
             this.match(VisLangParser.Identifier);
             this.state = 178;
             this.match(VisLangParser.Lparen);
-            this.state = 179;
-            this.params();
             this.state = 180;
+            this.errorHandler.sync(this);
+            _la = this.tokenStream.LA(1);
+            if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 33826) !== 0) || ((((_la - 40)) & ~0x1F) === 0 && ((1 << (_la - 40)) & 95) !== 0)) {
+                {
+                this.state = 179;
+                this.params();
+                }
+            }
+
+            this.state = 182;
             this.match(VisLangParser.Rparen);
             }
         }
@@ -844,40 +855,40 @@ export class VisLangParser extends antlr.Parser {
         try {
             this.enterOuterAlt(localContext, 1);
             {
-            this.state = 188;
+            this.state = 190;
             this.errorHandler.sync(this);
             _la = this.tokenStream.LA(1);
-            while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 3892322562) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & 6083) !== 0)) {
+            while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2684388386) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & 24335) !== 0)) {
                 {
-                this.state = 186;
+                this.state = 188;
                 this.errorHandler.sync(this);
-                switch (this.interpreter.adaptivePredict(this.tokenStream, 14, this.context) ) {
+                switch (this.interpreter.adaptivePredict(this.tokenStream, 15, this.context) ) {
                 case 1:
                     {
-                    this.state = 182;
+                    this.state = 184;
                     this.expr(0);
-                    this.state = 183;
+                    this.state = 185;
                     this.match(VisLangParser.Semicolon);
                     }
                     break;
                 case 2:
                     {
-                    this.state = 185;
+                    this.state = 187;
                     this.statement();
                     }
                     break;
                 }
                 }
-                this.state = 190;
+                this.state = 192;
                 this.errorHandler.sync(this);
                 _la = this.tokenStream.LA(1);
             }
-            this.state = 192;
+            this.state = 194;
             this.errorHandler.sync(this);
             _la = this.tokenStream.LA(1);
-            if (_la === 34) {
+            if (_la === 36) {
                 {
-                this.state = 191;
+                this.state = 193;
                 this.returnStatement();
                 }
             }
@@ -903,11 +914,11 @@ export class VisLangParser extends antlr.Parser {
         try {
             this.enterOuterAlt(localContext, 1);
             {
-            this.state = 194;
-            this.match(VisLangParser.Return);
-            this.state = 195;
-            this.expr(0);
             this.state = 196;
+            this.match(VisLangParser.Return);
+            this.state = 197;
+            this.expr(0);
+            this.state = 198;
             this.match(VisLangParser.Semicolon);
             }
         }
@@ -943,19 +954,19 @@ export class VisLangParser extends antlr.Parser {
             let alternative: number;
             this.enterOuterAlt(localContext, 1);
             {
-            this.state = 214;
+            this.state = 228;
             this.errorHandler.sync(this);
-            switch (this.interpreter.adaptivePredict(this.tokenStream, 17, this.context) ) {
+            switch (this.interpreter.adaptivePredict(this.tokenStream, 20, this.context) ) {
             case 1:
                 {
                 localContext = new UnaryNotContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
 
-                this.state = 199;
+                this.state = 201;
                 this.match(VisLangParser.Not);
-                this.state = 200;
-                this.expr(17);
+                this.state = 202;
+                this.expr(19);
                 }
                 break;
             case 2:
@@ -963,93 +974,130 @@ export class VisLangParser extends antlr.Parser {
                 localContext = new UnaryMinContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 201;
+                this.state = 203;
                 this.match(VisLangParser.Sub);
-                this.state = 202;
-                this.expr(16);
+                this.state = 204;
+                this.expr(18);
                 }
                 break;
             case 3:
                 {
-                localContext = new IntLiteralContext(localContext);
+                localContext = new ArrayLiteralContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 203;
-                this.match(VisLangParser.Integer);
+                this.state = 205;
+                this.match(VisLangParser.Lbracket);
+                this.state = 214;
+                this.errorHandler.sync(this);
+                _la = this.tokenStream.LA(1);
+                if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 33826) !== 0) || ((((_la - 40)) & ~0x1F) === 0 && ((1 << (_la - 40)) & 95) !== 0)) {
+                    {
+                    this.state = 206;
+                    this.expr(0);
+                    this.state = 211;
+                    this.errorHandler.sync(this);
+                    _la = this.tokenStream.LA(1);
+                    while (_la === 7) {
+                        {
+                        {
+                        this.state = 207;
+                        this.match(VisLangParser.Comma);
+                        this.state = 208;
+                        this.expr(0);
+                        }
+                        }
+                        this.state = 213;
+                        this.errorHandler.sync(this);
+                        _la = this.tokenStream.LA(1);
+                    }
+                    }
+                }
+
+                this.state = 216;
+                this.match(VisLangParser.Rbracket);
                 }
                 break;
             case 4:
                 {
-                localContext = new DoubleLiteralContext(localContext);
+                localContext = new IntLiteralContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 204;
-                this.match(VisLangParser.Double);
+                this.state = 217;
+                this.match(VisLangParser.Integer);
                 }
                 break;
             case 5:
                 {
-                localContext = new StringLiteralContext(localContext);
+                localContext = new DoubleLiteralContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 205;
-                this.match(VisLangParser.String);
+                this.state = 218;
+                this.match(VisLangParser.Double);
                 }
                 break;
             case 6:
                 {
-                localContext = new BooleanLiteralContext(localContext);
+                localContext = new StringLiteralContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 206;
-                this.match(VisLangParser.Boolean);
+                this.state = 219;
+                this.match(VisLangParser.String);
                 }
                 break;
             case 7:
                 {
-                localContext = new IdentifierContext(localContext);
+                localContext = new BooleanLiteralContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 207;
-                this.match(VisLangParser.Identifier);
+                this.state = 220;
+                this.match(VisLangParser.Boolean);
                 }
                 break;
             case 8:
                 {
-                localContext = new NullContext(localContext);
+                localContext = new IdentifierContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 208;
-                this.match(VisLangParser.Null);
+                this.state = 221;
+                this.match(VisLangParser.Identifier);
                 }
                 break;
             case 9:
                 {
-                localContext = new GroupingsContext(localContext);
+                localContext = new NullContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 209;
-                this.match(VisLangParser.Lparen);
-                this.state = 210;
-                this.expr(0);
-                this.state = 211;
-                this.match(VisLangParser.Rparen);
+                this.state = 222;
+                this.match(VisLangParser.Null);
                 }
                 break;
             case 10:
                 {
+                localContext = new GroupingsContext(localContext);
+                this.context = localContext;
+                previousContext = localContext;
+                this.state = 223;
+                this.match(VisLangParser.Lparen);
+                this.state = 224;
+                this.expr(0);
+                this.state = 225;
+                this.match(VisLangParser.Rparen);
+                }
+                break;
+            case 11:
+                {
                 localContext = new FunCallExprContext(localContext);
                 this.context = localContext;
                 previousContext = localContext;
-                this.state = 213;
+                this.state = 227;
                 this.funCall();
                 }
                 break;
             }
             this.context!.stop = this.tokenStream.LT(-1);
-            this.state = 239;
+            this.state = 258;
             this.errorHandler.sync(this);
-            alternative = this.interpreter.adaptivePredict(this.tokenStream, 19, this.context);
+            alternative = this.interpreter.adaptivePredict(this.tokenStream, 22, this.context);
             while (alternative !== 2 && alternative !== antlr.ATN.INVALID_ALT_NUMBER) {
                 if (alternative === 1) {
                     if (this.parseListeners != null) {
@@ -1057,153 +1105,169 @@ export class VisLangParser extends antlr.Parser {
                     }
                     previousContext = localContext;
                     {
-                    this.state = 237;
+                    this.state = 256;
                     this.errorHandler.sync(this);
-                    switch (this.interpreter.adaptivePredict(this.tokenStream, 18, this.context) ) {
+                    switch (this.interpreter.adaptivePredict(this.tokenStream, 21, this.context) ) {
                     case 1:
                         {
                         localContext = new BinaryMulContext(new ExprContext(parentContext, parentState));
                         this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
-                        this.state = 216;
-                        if (!(this.precpred(this.context, 15))) {
-                            throw this.createFailedPredicateException("this.precpred(this.context, 15)");
+                        this.state = 230;
+                        if (!(this.precpred(this.context, 17))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 17)");
                         }
-                        this.state = 217;
+                        this.state = 231;
                         (localContext as BinaryMulContext)._op = this.tokenStream.LT(1);
                         _la = this.tokenStream.LA(1);
-                        if(!((((_la) & ~0x1F) === 0 && ((1 << _la) & 3584) !== 0))) {
+                        if(!((((_la) & ~0x1F) === 0 && ((1 << _la) & 14336) !== 0))) {
                             (localContext as BinaryMulContext)._op = this.errorHandler.recoverInline(this);
                         }
                         else {
                             this.errorHandler.reportMatch(this);
                             this.consume();
                         }
-                        this.state = 218;
-                        this.expr(16);
+                        this.state = 232;
+                        this.expr(18);
                         }
                         break;
                     case 2:
                         {
                         localContext = new BinaryAddContext(new ExprContext(parentContext, parentState));
                         this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
-                        this.state = 219;
-                        if (!(this.precpred(this.context, 14))) {
-                            throw this.createFailedPredicateException("this.precpred(this.context, 14)");
+                        this.state = 233;
+                        if (!(this.precpred(this.context, 16))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 16)");
                         }
-                        this.state = 220;
+                        this.state = 234;
                         (localContext as BinaryAddContext)._op = this.tokenStream.LT(1);
                         _la = this.tokenStream.LA(1);
-                        if(!(_la === 12 || _la === 13)) {
+                        if(!(_la === 14 || _la === 15)) {
                             (localContext as BinaryAddContext)._op = this.errorHandler.recoverInline(this);
                         }
                         else {
                             this.errorHandler.reportMatch(this);
                             this.consume();
                         }
-                        this.state = 221;
-                        this.expr(15);
+                        this.state = 235;
+                        this.expr(17);
                         }
                         break;
                     case 3:
                         {
                         localContext = new ComparisonContext(new ExprContext(parentContext, parentState));
                         this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
-                        this.state = 222;
-                        if (!(this.precpred(this.context, 13))) {
-                            throw this.createFailedPredicateException("this.precpred(this.context, 13)");
+                        this.state = 236;
+                        if (!(this.precpred(this.context, 15))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 15)");
                         }
-                        this.state = 223;
+                        this.state = 237;
                         (localContext as ComparisonContext)._op = this.tokenStream.LT(1);
                         _la = this.tokenStream.LA(1);
-                        if(!((((_la) & ~0x1F) === 0 && ((1 << _la) & 245760) !== 0))) {
+                        if(!((((_la) & ~0x1F) === 0 && ((1 << _la) & 983040) !== 0))) {
                             (localContext as ComparisonContext)._op = this.errorHandler.recoverInline(this);
                         }
                         else {
                             this.errorHandler.reportMatch(this);
                             this.consume();
                         }
-                        this.state = 224;
-                        this.expr(14);
+                        this.state = 238;
+                        this.expr(16);
                         }
                         break;
                     case 4:
                         {
                         localContext = new EqualityContext(new ExprContext(parentContext, parentState));
                         this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
-                        this.state = 225;
-                        if (!(this.precpred(this.context, 12))) {
-                            throw this.createFailedPredicateException("this.precpred(this.context, 12)");
+                        this.state = 239;
+                        if (!(this.precpred(this.context, 14))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 14)");
                         }
-                        this.state = 226;
+                        this.state = 240;
                         (localContext as EqualityContext)._op = this.tokenStream.LT(1);
                         _la = this.tokenStream.LA(1);
-                        if(!(_la === 18 || _la === 19)) {
+                        if(!(_la === 20 || _la === 21)) {
                             (localContext as EqualityContext)._op = this.errorHandler.recoverInline(this);
                         }
                         else {
                             this.errorHandler.reportMatch(this);
                             this.consume();
                         }
-                        this.state = 227;
-                        this.expr(13);
+                        this.state = 241;
+                        this.expr(15);
                         }
                         break;
                     case 5:
                         {
                         localContext = new AssignActionContext(new ExprContext(parentContext, parentState));
                         this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
-                        this.state = 228;
-                        if (!(this.precpred(this.context, 11))) {
-                            throw this.createFailedPredicateException("this.precpred(this.context, 11)");
+                        this.state = 242;
+                        if (!(this.precpred(this.context, 13))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 13)");
                         }
-                        this.state = 229;
+                        this.state = 243;
                         (localContext as AssignActionContext)._op = this.tokenStream.LT(1);
                         _la = this.tokenStream.LA(1);
-                        if(!((((_la) & ~0x1F) === 0 && ((1 << _la) & 65011712) !== 0))) {
+                        if(!((((_la) & ~0x1F) === 0 && ((1 << _la) & 260046848) !== 0))) {
                             (localContext as AssignActionContext)._op = this.errorHandler.recoverInline(this);
                         }
                         else {
                             this.errorHandler.reportMatch(this);
                             this.consume();
                         }
-                        this.state = 230;
-                        this.expr(12);
+                        this.state = 244;
+                        this.expr(14);
                         }
                         break;
                     case 6:
                         {
                         localContext = new LogicalAndContext(new ExprContext(parentContext, parentState));
                         this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
-                        this.state = 231;
-                        if (!(this.precpred(this.context, 10))) {
-                            throw this.createFailedPredicateException("this.precpred(this.context, 10)");
+                        this.state = 245;
+                        if (!(this.precpred(this.context, 12))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 12)");
                         }
-                        this.state = 232;
+                        this.state = 246;
                         this.match(VisLangParser.And);
-                        this.state = 233;
-                        this.expr(11);
+                        this.state = 247;
+                        this.expr(13);
                         }
                         break;
                     case 7:
                         {
                         localContext = new LogicalOrContext(new ExprContext(parentContext, parentState));
                         this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
-                        this.state = 234;
-                        if (!(this.precpred(this.context, 9))) {
-                            throw this.createFailedPredicateException("this.precpred(this.context, 9)");
+                        this.state = 248;
+                        if (!(this.precpred(this.context, 11))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 11)");
                         }
-                        this.state = 235;
+                        this.state = 249;
                         this.match(VisLangParser.Or);
-                        this.state = 236;
-                        this.expr(10);
+                        this.state = 250;
+                        this.expr(12);
+                        }
+                        break;
+                    case 8:
+                        {
+                        localContext = new IndexAccessContext(new ExprContext(parentContext, parentState));
+                        this.pushNewRecursionContext(localContext, _startState, VisLangParser.RULE_expr);
+                        this.state = 251;
+                        if (!(this.precpred(this.context, 10))) {
+                            throw this.createFailedPredicateException("this.precpred(this.context, 10)");
+                        }
+                        this.state = 252;
+                        this.match(VisLangParser.Lbracket);
+                        this.state = 253;
+                        this.expr(0);
+                        this.state = 254;
+                        this.match(VisLangParser.Rbracket);
                         }
                         break;
                     }
                     }
                 }
-                this.state = 241;
+                this.state = 260;
                 this.errorHandler.sync(this);
-                alternative = this.interpreter.adaptivePredict(this.tokenStream, 19, this.context);
+                alternative = this.interpreter.adaptivePredict(this.tokenStream, 22, this.context);
             }
             }
         }
@@ -1224,28 +1288,67 @@ export class VisLangParser extends antlr.Parser {
         let localContext = new AssignmentContext(this.context, this.state);
         this.enterRule(localContext, 38, VisLangParser.RULE_assignment);
         try {
-            this.enterOuterAlt(localContext, 1);
-            {
-            this.state = 242;
-            this.match(VisLangParser.Identifier);
-            this.state = 243;
-            this.match(VisLangParser.Assign);
-            this.state = 246;
+            this.state = 276;
             this.errorHandler.sync(this);
-            switch (this.interpreter.adaptivePredict(this.tokenStream, 20, this.context) ) {
+            switch (this.interpreter.adaptivePredict(this.tokenStream, 25, this.context) ) {
             case 1:
+                localContext = new ArrayAssignmentContext(localContext);
+                this.enterOuterAlt(localContext, 1);
                 {
-                this.state = 244;
+                this.state = 261;
+                this.match(VisLangParser.Identifier);
+                this.state = 262;
+                this.match(VisLangParser.Lbracket);
+                this.state = 263;
                 this.expr(0);
+                this.state = 264;
+                this.match(VisLangParser.Rbracket);
+                this.state = 265;
+                this.match(VisLangParser.Assign);
+                this.state = 268;
+                this.errorHandler.sync(this);
+                switch (this.interpreter.adaptivePredict(this.tokenStream, 23, this.context) ) {
+                case 1:
+                    {
+                    this.state = 266;
+                    this.expr(0);
+                    }
+                    break;
+                case 2:
+                    {
+                    this.state = 267;
+                    this.funCall();
+                    }
+                    break;
+                }
                 }
                 break;
             case 2:
+                localContext = new VariableAssignmentContext(localContext);
+                this.enterOuterAlt(localContext, 2);
                 {
-                this.state = 245;
-                this.funCall();
+                this.state = 270;
+                this.match(VisLangParser.Identifier);
+                this.state = 271;
+                this.match(VisLangParser.Assign);
+                this.state = 274;
+                this.errorHandler.sync(this);
+                switch (this.interpreter.adaptivePredict(this.tokenStream, 24, this.context) ) {
+                case 1:
+                    {
+                    this.state = 272;
+                    this.expr(0);
+                    }
+                    break;
+                case 2:
+                    {
+                    this.state = 273;
+                    this.funCall();
+                    }
+                    break;
+                }
                 }
                 break;
-            }
             }
         }
         catch (re) {
@@ -1272,25 +1375,27 @@ export class VisLangParser extends antlr.Parser {
     private expr_sempred(localContext: ExprContext | null, predIndex: number): boolean {
         switch (predIndex) {
         case 0:
-            return this.precpred(this.context, 15);
+            return this.precpred(this.context, 17);
         case 1:
-            return this.precpred(this.context, 14);
+            return this.precpred(this.context, 16);
         case 2:
-            return this.precpred(this.context, 13);
+            return this.precpred(this.context, 15);
         case 3:
-            return this.precpred(this.context, 12);
+            return this.precpred(this.context, 14);
         case 4:
-            return this.precpred(this.context, 11);
+            return this.precpred(this.context, 13);
         case 5:
-            return this.precpred(this.context, 10);
+            return this.precpred(this.context, 12);
         case 6:
-            return this.precpred(this.context, 9);
+            return this.precpred(this.context, 11);
+        case 7:
+            return this.precpred(this.context, 10);
         }
         return true;
     }
 
     public static readonly _serializedATN: number[] = [
-        4,1,45,249,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,47,279,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,1,0,
         1,0,1,0,1,1,1,1,1,1,1,1,1,1,4,1,49,8,1,11,1,12,1,50,1,2,1,2,1,3,
@@ -1303,81 +1408,94 @@ export class VisLangParser extends antlr.Parser {
         11,1,11,1,11,1,11,1,11,1,11,1,12,1,12,1,12,1,12,1,12,3,12,151,8,
         12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,13,1,13,3,13,162,8,13,1,
         14,1,14,1,14,3,14,167,8,14,1,14,1,14,1,14,1,14,3,14,173,8,14,1,14,
-        3,14,176,8,14,1,15,1,15,1,15,1,15,1,15,1,16,1,16,1,16,1,16,5,16,
-        187,8,16,10,16,12,16,190,9,16,1,16,3,16,193,8,16,1,17,1,17,1,17,
-        1,17,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,
-        1,18,1,18,1,18,1,18,3,18,215,8,18,1,18,1,18,1,18,1,18,1,18,1,18,
-        1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,
-        1,18,1,18,5,18,238,8,18,10,18,12,18,241,9,18,1,19,1,19,1,19,1,19,
-        3,19,247,8,19,1,19,3,70,78,99,1,36,20,0,2,4,6,8,10,12,14,16,18,20,
-        22,24,26,28,30,32,34,36,38,0,6,2,0,41,41,44,44,1,0,9,11,1,0,12,13,
-        1,0,14,17,1,0,18,19,1,0,21,25,268,0,40,1,0,0,0,2,48,1,0,0,0,4,52,
-        1,0,0,0,6,54,1,0,0,0,8,81,1,0,0,0,10,93,1,0,0,0,12,95,1,0,0,0,14,
-        105,1,0,0,0,16,113,1,0,0,0,18,122,1,0,0,0,20,127,1,0,0,0,22,137,
-        1,0,0,0,24,145,1,0,0,0,26,161,1,0,0,0,28,175,1,0,0,0,30,177,1,0,
-        0,0,32,188,1,0,0,0,34,194,1,0,0,0,36,214,1,0,0,0,38,242,1,0,0,0,
-        40,41,3,2,1,0,41,42,5,0,0,1,42,1,1,0,0,0,43,49,3,10,5,0,44,49,3,
-        4,2,0,45,46,3,36,18,0,46,47,5,7,0,0,47,49,1,0,0,0,48,43,1,0,0,0,
-        48,44,1,0,0,0,48,45,1,0,0,0,49,50,1,0,0,0,50,48,1,0,0,0,50,51,1,
-        0,0,0,51,3,1,0,0,0,52,53,3,6,3,0,53,5,1,0,0,0,54,55,5,26,0,0,55,
-        56,5,44,0,0,56,58,5,1,0,0,57,59,3,8,4,0,58,57,1,0,0,0,58,59,1,0,
-        0,0,59,60,1,0,0,0,60,61,5,2,0,0,61,62,5,3,0,0,62,63,3,32,16,0,63,
-        64,5,4,0,0,64,7,1,0,0,0,65,70,5,44,0,0,66,67,5,5,0,0,67,69,5,44,
-        0,0,68,66,1,0,0,0,69,72,1,0,0,0,70,71,1,0,0,0,70,68,1,0,0,0,71,82,
-        1,0,0,0,72,70,1,0,0,0,73,78,3,36,18,0,74,75,5,5,0,0,75,77,3,36,18,
-        0,76,74,1,0,0,0,77,80,1,0,0,0,78,79,1,0,0,0,78,76,1,0,0,0,79,82,
-        1,0,0,0,80,78,1,0,0,0,81,65,1,0,0,0,81,73,1,0,0,0,82,9,1,0,0,0,83,
-        84,3,38,19,0,84,85,5,7,0,0,85,94,1,0,0,0,86,94,3,12,6,0,87,94,3,
-        20,10,0,88,94,3,22,11,0,89,94,3,24,12,0,90,91,3,26,13,0,91,92,5,
-        7,0,0,92,94,1,0,0,0,93,83,1,0,0,0,93,86,1,0,0,0,93,87,1,0,0,0,93,
-        88,1,0,0,0,93,89,1,0,0,0,93,90,1,0,0,0,94,11,1,0,0,0,95,99,3,14,
-        7,0,96,98,3,16,8,0,97,96,1,0,0,0,98,101,1,0,0,0,99,100,1,0,0,0,99,
-        97,1,0,0,0,100,103,1,0,0,0,101,99,1,0,0,0,102,104,3,18,9,0,103,102,
-        1,0,0,0,103,104,1,0,0,0,104,13,1,0,0,0,105,106,5,27,0,0,106,107,
-        5,1,0,0,107,108,3,36,18,0,108,109,5,2,0,0,109,110,5,3,0,0,110,111,
-        3,32,16,0,111,112,5,4,0,0,112,15,1,0,0,0,113,114,5,28,0,0,114,115,
-        5,27,0,0,115,116,5,1,0,0,116,117,3,36,18,0,117,118,5,2,0,0,118,119,
-        5,3,0,0,119,120,3,32,16,0,120,121,5,4,0,0,121,17,1,0,0,0,122,123,
-        5,28,0,0,123,124,5,3,0,0,124,125,3,32,16,0,125,126,5,4,0,0,126,19,
-        1,0,0,0,127,128,5,30,0,0,128,129,5,3,0,0,129,130,3,32,16,0,130,131,
-        5,4,0,0,131,132,5,31,0,0,132,133,5,1,0,0,133,134,3,36,18,0,134,135,
-        5,2,0,0,135,136,5,7,0,0,136,21,1,0,0,0,137,138,5,31,0,0,138,139,
-        5,1,0,0,139,140,3,36,18,0,140,141,5,2,0,0,141,142,5,3,0,0,142,143,
-        3,32,16,0,143,144,5,4,0,0,144,23,1,0,0,0,145,146,5,29,0,0,146,150,
-        5,1,0,0,147,151,3,38,19,0,148,151,5,44,0,0,149,151,5,41,0,0,150,
-        147,1,0,0,0,150,148,1,0,0,0,150,149,1,0,0,0,151,152,1,0,0,0,152,
-        153,5,35,0,0,153,154,7,0,0,0,154,155,5,2,0,0,155,156,5,3,0,0,156,
-        157,3,32,16,0,157,158,5,4,0,0,158,25,1,0,0,0,159,162,3,28,14,0,160,
-        162,3,30,15,0,161,159,1,0,0,0,161,160,1,0,0,0,162,27,1,0,0,0,163,
-        164,5,32,0,0,164,166,5,1,0,0,165,167,3,36,18,0,166,165,1,0,0,0,166,
-        167,1,0,0,0,167,168,1,0,0,0,168,176,5,2,0,0,169,170,5,33,0,0,170,
-        172,5,1,0,0,171,173,3,36,18,0,172,171,1,0,0,0,172,173,1,0,0,0,173,
-        174,1,0,0,0,174,176,5,2,0,0,175,163,1,0,0,0,175,169,1,0,0,0,176,
-        29,1,0,0,0,177,178,5,44,0,0,178,179,5,1,0,0,179,180,3,8,4,0,180,
-        181,5,2,0,0,181,31,1,0,0,0,182,183,3,36,18,0,183,184,5,7,0,0,184,
-        187,1,0,0,0,185,187,3,10,5,0,186,182,1,0,0,0,186,185,1,0,0,0,187,
-        190,1,0,0,0,188,186,1,0,0,0,188,189,1,0,0,0,189,192,1,0,0,0,190,
-        188,1,0,0,0,191,193,3,34,17,0,192,191,1,0,0,0,192,193,1,0,0,0,193,
-        33,1,0,0,0,194,195,5,34,0,0,195,196,3,36,18,0,196,197,5,7,0,0,197,
-        35,1,0,0,0,198,199,6,18,-1,0,199,200,5,8,0,0,200,215,3,36,18,17,
-        201,202,5,13,0,0,202,215,3,36,18,16,203,215,5,41,0,0,204,215,5,42,
-        0,0,205,215,5,40,0,0,206,215,5,39,0,0,207,215,5,44,0,0,208,215,5,
-        38,0,0,209,210,5,1,0,0,210,211,3,36,18,0,211,212,5,2,0,0,212,215,
-        1,0,0,0,213,215,3,30,15,0,214,198,1,0,0,0,214,201,1,0,0,0,214,203,
-        1,0,0,0,214,204,1,0,0,0,214,205,1,0,0,0,214,206,1,0,0,0,214,207,
-        1,0,0,0,214,208,1,0,0,0,214,209,1,0,0,0,214,213,1,0,0,0,215,239,
-        1,0,0,0,216,217,10,15,0,0,217,218,7,1,0,0,218,238,3,36,18,16,219,
-        220,10,14,0,0,220,221,7,2,0,0,221,238,3,36,18,15,222,223,10,13,0,
-        0,223,224,7,3,0,0,224,238,3,36,18,14,225,226,10,12,0,0,226,227,7,
-        4,0,0,227,238,3,36,18,13,228,229,10,11,0,0,229,230,7,5,0,0,230,238,
-        3,36,18,12,231,232,10,10,0,0,232,233,5,36,0,0,233,238,3,36,18,11,
-        234,235,10,9,0,0,235,236,5,37,0,0,236,238,3,36,18,10,237,216,1,0,
-        0,0,237,219,1,0,0,0,237,222,1,0,0,0,237,225,1,0,0,0,237,228,1,0,
-        0,0,237,231,1,0,0,0,237,234,1,0,0,0,238,241,1,0,0,0,239,237,1,0,
-        0,0,239,240,1,0,0,0,240,37,1,0,0,0,241,239,1,0,0,0,242,243,5,44,
-        0,0,243,246,5,20,0,0,244,247,3,36,18,0,245,247,3,30,15,0,246,244,
-        1,0,0,0,246,245,1,0,0,0,247,39,1,0,0,0,21,48,50,58,70,78,81,93,99,
-        103,150,161,166,172,175,186,188,192,214,237,239,246
+        3,14,176,8,14,1,15,1,15,1,15,3,15,181,8,15,1,15,1,15,1,16,1,16,1,
+        16,1,16,5,16,189,8,16,10,16,12,16,192,9,16,1,16,3,16,195,8,16,1,
+        17,1,17,1,17,1,17,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,5,
+        18,210,8,18,10,18,12,18,213,9,18,3,18,215,8,18,1,18,1,18,1,18,1,
+        18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,3,18,229,8,18,1,18,1,
+        18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,
+        18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,1,18,5,18,257,
+        8,18,10,18,12,18,260,9,18,1,19,1,19,1,19,1,19,1,19,1,19,1,19,3,19,
+        269,8,19,1,19,1,19,1,19,1,19,3,19,275,8,19,3,19,277,8,19,1,19,3,
+        70,78,99,1,36,20,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,
+        36,38,0,6,2,0,43,43,46,46,1,0,11,13,1,0,14,15,1,0,16,19,1,0,20,21,
+        1,0,23,27,305,0,40,1,0,0,0,2,48,1,0,0,0,4,52,1,0,0,0,6,54,1,0,0,
+        0,8,81,1,0,0,0,10,93,1,0,0,0,12,95,1,0,0,0,14,105,1,0,0,0,16,113,
+        1,0,0,0,18,122,1,0,0,0,20,127,1,0,0,0,22,137,1,0,0,0,24,145,1,0,
+        0,0,26,161,1,0,0,0,28,175,1,0,0,0,30,177,1,0,0,0,32,190,1,0,0,0,
+        34,196,1,0,0,0,36,228,1,0,0,0,38,276,1,0,0,0,40,41,3,2,1,0,41,42,
+        5,0,0,1,42,1,1,0,0,0,43,49,3,10,5,0,44,49,3,4,2,0,45,46,3,36,18,
+        0,46,47,5,9,0,0,47,49,1,0,0,0,48,43,1,0,0,0,48,44,1,0,0,0,48,45,
+        1,0,0,0,49,50,1,0,0,0,50,48,1,0,0,0,50,51,1,0,0,0,51,3,1,0,0,0,52,
+        53,3,6,3,0,53,5,1,0,0,0,54,55,5,28,0,0,55,56,5,46,0,0,56,58,5,1,
+        0,0,57,59,3,8,4,0,58,57,1,0,0,0,58,59,1,0,0,0,59,60,1,0,0,0,60,61,
+        5,2,0,0,61,62,5,3,0,0,62,63,3,32,16,0,63,64,5,4,0,0,64,7,1,0,0,0,
+        65,70,5,46,0,0,66,67,5,7,0,0,67,69,5,46,0,0,68,66,1,0,0,0,69,72,
+        1,0,0,0,70,71,1,0,0,0,70,68,1,0,0,0,71,82,1,0,0,0,72,70,1,0,0,0,
+        73,78,3,36,18,0,74,75,5,7,0,0,75,77,3,36,18,0,76,74,1,0,0,0,77,80,
+        1,0,0,0,78,79,1,0,0,0,78,76,1,0,0,0,79,82,1,0,0,0,80,78,1,0,0,0,
+        81,65,1,0,0,0,81,73,1,0,0,0,82,9,1,0,0,0,83,84,3,38,19,0,84,85,5,
+        9,0,0,85,94,1,0,0,0,86,94,3,12,6,0,87,94,3,20,10,0,88,94,3,22,11,
+        0,89,94,3,24,12,0,90,91,3,26,13,0,91,92,5,9,0,0,92,94,1,0,0,0,93,
+        83,1,0,0,0,93,86,1,0,0,0,93,87,1,0,0,0,93,88,1,0,0,0,93,89,1,0,0,
+        0,93,90,1,0,0,0,94,11,1,0,0,0,95,99,3,14,7,0,96,98,3,16,8,0,97,96,
+        1,0,0,0,98,101,1,0,0,0,99,100,1,0,0,0,99,97,1,0,0,0,100,103,1,0,
+        0,0,101,99,1,0,0,0,102,104,3,18,9,0,103,102,1,0,0,0,103,104,1,0,
+        0,0,104,13,1,0,0,0,105,106,5,29,0,0,106,107,5,1,0,0,107,108,3,36,
+        18,0,108,109,5,2,0,0,109,110,5,3,0,0,110,111,3,32,16,0,111,112,5,
+        4,0,0,112,15,1,0,0,0,113,114,5,30,0,0,114,115,5,29,0,0,115,116,5,
+        1,0,0,116,117,3,36,18,0,117,118,5,2,0,0,118,119,5,3,0,0,119,120,
+        3,32,16,0,120,121,5,4,0,0,121,17,1,0,0,0,122,123,5,30,0,0,123,124,
+        5,3,0,0,124,125,3,32,16,0,125,126,5,4,0,0,126,19,1,0,0,0,127,128,
+        5,32,0,0,128,129,5,3,0,0,129,130,3,32,16,0,130,131,5,4,0,0,131,132,
+        5,33,0,0,132,133,5,1,0,0,133,134,3,36,18,0,134,135,5,2,0,0,135,136,
+        5,9,0,0,136,21,1,0,0,0,137,138,5,33,0,0,138,139,5,1,0,0,139,140,
+        3,36,18,0,140,141,5,2,0,0,141,142,5,3,0,0,142,143,3,32,16,0,143,
+        144,5,4,0,0,144,23,1,0,0,0,145,146,5,31,0,0,146,150,5,1,0,0,147,
+        151,3,38,19,0,148,151,5,46,0,0,149,151,5,43,0,0,150,147,1,0,0,0,
+        150,148,1,0,0,0,150,149,1,0,0,0,151,152,1,0,0,0,152,153,5,37,0,0,
+        153,154,7,0,0,0,154,155,5,2,0,0,155,156,5,3,0,0,156,157,3,32,16,
+        0,157,158,5,4,0,0,158,25,1,0,0,0,159,162,3,28,14,0,160,162,3,30,
+        15,0,161,159,1,0,0,0,161,160,1,0,0,0,162,27,1,0,0,0,163,164,5,34,
+        0,0,164,166,5,1,0,0,165,167,3,36,18,0,166,165,1,0,0,0,166,167,1,
+        0,0,0,167,168,1,0,0,0,168,176,5,2,0,0,169,170,5,35,0,0,170,172,5,
+        1,0,0,171,173,3,36,18,0,172,171,1,0,0,0,172,173,1,0,0,0,173,174,
+        1,0,0,0,174,176,5,2,0,0,175,163,1,0,0,0,175,169,1,0,0,0,176,29,1,
+        0,0,0,177,178,5,46,0,0,178,180,5,1,0,0,179,181,3,8,4,0,180,179,1,
+        0,0,0,180,181,1,0,0,0,181,182,1,0,0,0,182,183,5,2,0,0,183,31,1,0,
+        0,0,184,185,3,36,18,0,185,186,5,9,0,0,186,189,1,0,0,0,187,189,3,
+        10,5,0,188,184,1,0,0,0,188,187,1,0,0,0,189,192,1,0,0,0,190,188,1,
+        0,0,0,190,191,1,0,0,0,191,194,1,0,0,0,192,190,1,0,0,0,193,195,3,
+        34,17,0,194,193,1,0,0,0,194,195,1,0,0,0,195,33,1,0,0,0,196,197,5,
+        36,0,0,197,198,3,36,18,0,198,199,5,9,0,0,199,35,1,0,0,0,200,201,
+        6,18,-1,0,201,202,5,10,0,0,202,229,3,36,18,19,203,204,5,15,0,0,204,
+        229,3,36,18,18,205,214,5,5,0,0,206,211,3,36,18,0,207,208,5,7,0,0,
+        208,210,3,36,18,0,209,207,1,0,0,0,210,213,1,0,0,0,211,209,1,0,0,
+        0,211,212,1,0,0,0,212,215,1,0,0,0,213,211,1,0,0,0,214,206,1,0,0,
+        0,214,215,1,0,0,0,215,216,1,0,0,0,216,229,5,6,0,0,217,229,5,43,0,
+        0,218,229,5,44,0,0,219,229,5,42,0,0,220,229,5,41,0,0,221,229,5,46,
+        0,0,222,229,5,40,0,0,223,224,5,1,0,0,224,225,3,36,18,0,225,226,5,
+        2,0,0,226,229,1,0,0,0,227,229,3,30,15,0,228,200,1,0,0,0,228,203,
+        1,0,0,0,228,205,1,0,0,0,228,217,1,0,0,0,228,218,1,0,0,0,228,219,
+        1,0,0,0,228,220,1,0,0,0,228,221,1,0,0,0,228,222,1,0,0,0,228,223,
+        1,0,0,0,228,227,1,0,0,0,229,258,1,0,0,0,230,231,10,17,0,0,231,232,
+        7,1,0,0,232,257,3,36,18,18,233,234,10,16,0,0,234,235,7,2,0,0,235,
+        257,3,36,18,17,236,237,10,15,0,0,237,238,7,3,0,0,238,257,3,36,18,
+        16,239,240,10,14,0,0,240,241,7,4,0,0,241,257,3,36,18,15,242,243,
+        10,13,0,0,243,244,7,5,0,0,244,257,3,36,18,14,245,246,10,12,0,0,246,
+        247,5,38,0,0,247,257,3,36,18,13,248,249,10,11,0,0,249,250,5,39,0,
+        0,250,257,3,36,18,12,251,252,10,10,0,0,252,253,5,5,0,0,253,254,3,
+        36,18,0,254,255,5,6,0,0,255,257,1,0,0,0,256,230,1,0,0,0,256,233,
+        1,0,0,0,256,236,1,0,0,0,256,239,1,0,0,0,256,242,1,0,0,0,256,245,
+        1,0,0,0,256,248,1,0,0,0,256,251,1,0,0,0,257,260,1,0,0,0,258,256,
+        1,0,0,0,258,259,1,0,0,0,259,37,1,0,0,0,260,258,1,0,0,0,261,262,5,
+        46,0,0,262,263,5,5,0,0,263,264,3,36,18,0,264,265,5,6,0,0,265,268,
+        5,22,0,0,266,269,3,36,18,0,267,269,3,30,15,0,268,266,1,0,0,0,268,
+        267,1,0,0,0,269,277,1,0,0,0,270,271,5,46,0,0,271,274,5,22,0,0,272,
+        275,3,36,18,0,273,275,3,30,15,0,274,272,1,0,0,0,274,273,1,0,0,0,
+        275,277,1,0,0,0,276,261,1,0,0,0,276,270,1,0,0,0,277,39,1,0,0,0,26,
+        48,50,58,70,78,81,93,99,103,150,161,166,172,175,180,188,190,194,
+        211,214,228,256,258,268,274,276
     ];
 
     private static __ATN: antlr.ATN;
@@ -2155,11 +2273,11 @@ export class FunCallContext extends antlr.ParserRuleContext {
     public Lparen(): antlr.TerminalNode {
         return this.getToken(VisLangParser.Lparen, 0)!;
     }
-    public params(): ParamsContext {
-        return this.getRuleContext(0, ParamsContext)!;
-    }
     public Rparen(): antlr.TerminalNode {
         return this.getToken(VisLangParser.Rparen, 0)!;
+    }
+    public params(): ParamsContext | null {
+        return this.getRuleContext(0, ParamsContext);
     }
     public override get ruleIndex(): number {
         return VisLangParser.RULE_funCall;
@@ -2401,6 +2519,53 @@ export class ComparisonContext extends ExprContext {
         }
     }
 }
+export class ArrayLiteralContext extends ExprContext {
+    public constructor(ctx: ExprContext) {
+        super(ctx.parent, ctx.invokingState);
+        super.copyFrom(ctx);
+    }
+    public Lbracket(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Lbracket, 0)!;
+    }
+    public Rbracket(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Rbracket, 0)!;
+    }
+    public expr(): ExprContext[];
+    public expr(i: number): ExprContext | null;
+    public expr(i?: number): ExprContext[] | ExprContext | null {
+        if (i === undefined) {
+            return this.getRuleContexts(ExprContext);
+        }
+
+        return this.getRuleContext(i, ExprContext);
+    }
+    public Comma(): antlr.TerminalNode[];
+    public Comma(i: number): antlr.TerminalNode | null;
+    public Comma(i?: number): antlr.TerminalNode | null | antlr.TerminalNode[] {
+    	if (i === undefined) {
+    		return this.getTokens(VisLangParser.Comma);
+    	} else {
+    		return this.getToken(VisLangParser.Comma, i);
+    	}
+    }
+    public override enterRule(listener: VisLangListener): void {
+        if(listener.enterArrayLiteral) {
+             listener.enterArrayLiteral(this);
+        }
+    }
+    public override exitRule(listener: VisLangListener): void {
+        if(listener.exitArrayLiteral) {
+             listener.exitArrayLiteral(this);
+        }
+    }
+    public override accept<Result>(visitor: VisLangVisitor<Result>): Result | null {
+        if (visitor.visitArrayLiteral) {
+            return visitor.visitArrayLiteral(this);
+        } else {
+            return visitor.visitChildren(this);
+        }
+    }
+}
 export class IntLiteralContext extends ExprContext {
     public constructor(ctx: ExprContext) {
         super(ctx.parent, ctx.invokingState);
@@ -2457,6 +2622,44 @@ export class LogicalAndContext extends ExprContext {
     public override accept<Result>(visitor: VisLangVisitor<Result>): Result | null {
         if (visitor.visitLogicalAnd) {
             return visitor.visitLogicalAnd(this);
+        } else {
+            return visitor.visitChildren(this);
+        }
+    }
+}
+export class IndexAccessContext extends ExprContext {
+    public constructor(ctx: ExprContext) {
+        super(ctx.parent, ctx.invokingState);
+        super.copyFrom(ctx);
+    }
+    public expr(): ExprContext[];
+    public expr(i: number): ExprContext | null;
+    public expr(i?: number): ExprContext[] | ExprContext | null {
+        if (i === undefined) {
+            return this.getRuleContexts(ExprContext);
+        }
+
+        return this.getRuleContext(i, ExprContext);
+    }
+    public Lbracket(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Lbracket, 0)!;
+    }
+    public Rbracket(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Rbracket, 0)!;
+    }
+    public override enterRule(listener: VisLangListener): void {
+        if(listener.enterIndexAccess) {
+             listener.enterIndexAccess(this);
+        }
+    }
+    public override exitRule(listener: VisLangListener): void {
+        if(listener.exitIndexAccess) {
+             listener.exitIndexAccess(this);
+        }
+    }
+    public override accept<Result>(visitor: VisLangVisitor<Result>): Result | null {
+        if (visitor.visitIndexAccess) {
+            return visitor.visitIndexAccess(this);
         } else {
             return visitor.visitChildren(this);
         }
@@ -2849,6 +3052,65 @@ export class AssignmentContext extends antlr.ParserRuleContext {
     public constructor(parent: antlr.ParserRuleContext | null, invokingState: number) {
         super(parent, invokingState);
     }
+    public override get ruleIndex(): number {
+        return VisLangParser.RULE_assignment;
+    }
+    public override copyFrom(ctx: AssignmentContext): void {
+        super.copyFrom(ctx);
+    }
+}
+export class ArrayAssignmentContext extends AssignmentContext {
+    public constructor(ctx: AssignmentContext) {
+        super(ctx.parent, ctx.invokingState);
+        super.copyFrom(ctx);
+    }
+    public Identifier(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Identifier, 0)!;
+    }
+    public Lbracket(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Lbracket, 0)!;
+    }
+    public expr(): ExprContext[];
+    public expr(i: number): ExprContext | null;
+    public expr(i?: number): ExprContext[] | ExprContext | null {
+        if (i === undefined) {
+            return this.getRuleContexts(ExprContext);
+        }
+
+        return this.getRuleContext(i, ExprContext);
+    }
+    public Rbracket(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Rbracket, 0)!;
+    }
+    public Assign(): antlr.TerminalNode {
+        return this.getToken(VisLangParser.Assign, 0)!;
+    }
+    public funCall(): FunCallContext | null {
+        return this.getRuleContext(0, FunCallContext);
+    }
+    public override enterRule(listener: VisLangListener): void {
+        if(listener.enterArrayAssignment) {
+             listener.enterArrayAssignment(this);
+        }
+    }
+    public override exitRule(listener: VisLangListener): void {
+        if(listener.exitArrayAssignment) {
+             listener.exitArrayAssignment(this);
+        }
+    }
+    public override accept<Result>(visitor: VisLangVisitor<Result>): Result | null {
+        if (visitor.visitArrayAssignment) {
+            return visitor.visitArrayAssignment(this);
+        } else {
+            return visitor.visitChildren(this);
+        }
+    }
+}
+export class VariableAssignmentContext extends AssignmentContext {
+    public constructor(ctx: AssignmentContext) {
+        super(ctx.parent, ctx.invokingState);
+        super.copyFrom(ctx);
+    }
     public Identifier(): antlr.TerminalNode {
         return this.getToken(VisLangParser.Identifier, 0)!;
     }
@@ -2861,22 +3123,19 @@ export class AssignmentContext extends antlr.ParserRuleContext {
     public funCall(): FunCallContext | null {
         return this.getRuleContext(0, FunCallContext);
     }
-    public override get ruleIndex(): number {
-        return VisLangParser.RULE_assignment;
-    }
     public override enterRule(listener: VisLangListener): void {
-        if(listener.enterAssignment) {
-             listener.enterAssignment(this);
+        if(listener.enterVariableAssignment) {
+             listener.enterVariableAssignment(this);
         }
     }
     public override exitRule(listener: VisLangListener): void {
-        if(listener.exitAssignment) {
-             listener.exitAssignment(this);
+        if(listener.exitVariableAssignment) {
+             listener.exitVariableAssignment(this);
         }
     }
     public override accept<Result>(visitor: VisLangVisitor<Result>): Result | null {
-        if (visitor.visitAssignment) {
-            return visitor.visitAssignment(this);
+        if (visitor.visitVariableAssignment) {
+            return visitor.visitVariableAssignment(this);
         } else {
             return visitor.visitChildren(this);
         }

@@ -1,12 +1,13 @@
 <script lang="ts">
   import { graphStore } from '../stores/graphStore.js';
   import { fileStore } from '../stores/fileStore.js';
+  import { consoleStore } from '../stores/consoleStore.js';
   import { PALETTE_CATEGORIES } from '../../canvas/nodeTemplates.js';
   import { CategoryColors } from '../../canvas/constants.js';
   import CreateVariableModal from './modals/CreateVariableModal.svelte';
   import CreateFunctionModal from './modals/CreateFunctionModal.svelte';
 
-  type SidebarTab = 'palette' | 'variables' | 'functions' | 'files';
+  type SidebarTab = 'palette' | 'variables' | 'watch' | 'functions' | 'files';
   let activeTab: SidebarTab = 'palette';
   export let collapsed = false;
   let nodeSearch = '';
@@ -41,17 +42,17 @@
   {#if collapsed}
     <button class="m-2 w-8 h-8 rounded-xl text-m3-primary hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary" on:click={() => (collapsed = false)} aria-label="Expand palette" title="Expand palette">›</button>
     <div class="mt-2 flex flex-col items-center gap-3 text-[10px] font-bold text-m3-outline">
-      <span title="Nodes">◈</span><span title="Variables">V</span><span title="Functions">ƒ</span><span title="Files">□</span>
+      <span title="Nodes">◈</span><span title="Variables">V</span><span title="Live Watch">👁</span><span title="Functions">ƒ</span><span title="Files">□</span>
     </div>
   {:else}
   <div class="h-11 px-3 flex items-center justify-between border-b border-surface-container-high">
-    <span class="text-xs font-semibold text-m3-on-surface">Build</span>
+    <span class="text-xs font-semibold text-m3-on-surface">Build & Debug</span>
     <button class="w-7 h-7 rounded-lg text-m3-outline hover:text-m3-on-surface hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary" on:click={() => (collapsed = true)} aria-label="Collapse palette" title="Collapse palette">‹</button>
   </div>
   <!-- Tab Navigation -->
-  <div class="p-2 border-b border-surface-container bg-surface-container/60 flex items-center gap-1" role="tablist" aria-label="Workspace panels">
+  <div class="p-1.5 border-b border-surface-container bg-surface-container/60 flex items-center gap-0.5" role="tablist" aria-label="Workspace panels">
     <button
-      class="flex-1 py-1.5 text-xs font-medium rounded-full transition-all text-center {activeTab === 'palette' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
+      class="flex-1 py-1.5 text-[11px] font-medium rounded-full transition-all text-center {activeTab === 'palette' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
       on:click={() => (activeTab = 'palette')}
       role="tab"
       aria-selected={activeTab === 'palette'}
@@ -59,23 +60,34 @@
       Nodes
     </button>
     <button
-      class="flex-1 py-1.5 text-xs font-medium rounded-full transition-all text-center {activeTab === 'variables' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
+      class="flex-1 py-1.5 text-[11px] font-medium rounded-full transition-all text-center {activeTab === 'variables' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
       on:click={() => (activeTab = 'variables')}
       role="tab"
       aria-selected={activeTab === 'variables'}
     >
-      Vars ({$graphStore.variables.length})
+      Vars
     </button>
     <button
-      class="flex-1 py-1.5 text-xs font-medium rounded-full transition-all text-center {activeTab === 'functions' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
+      class="flex-1 py-1.5 text-[11px] font-medium rounded-full transition-all text-center {activeTab === 'watch' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'} relative"
+      on:click={() => (activeTab = 'watch')}
+      role="tab"
+      aria-selected={activeTab === 'watch'}
+    >
+      <span>Watch</span>
+      {#if $consoleStore.isRunning}
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 absolute top-1 right-1 animate-ping"></span>
+      {/if}
+    </button>
+    <button
+      class="flex-1 py-1.5 text-[11px] font-medium rounded-full transition-all text-center {activeTab === 'functions' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
       on:click={() => (activeTab = 'functions')}
       role="tab"
       aria-selected={activeTab === 'functions'}
     >
-      Funcs ({$graphStore.functions.length})
+      Funcs
     </button>
     <button
-      class="flex-1 py-1.5 text-xs font-medium rounded-full transition-all text-center {activeTab === 'files' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
+      class="flex-1 py-1.5 text-[11px] font-medium rounded-full transition-all text-center {activeTab === 'files' ? 'bg-m3-primary text-m3-on-primary font-semibold shadow-m3-1' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
       on:click={() => (activeTab = 'files')}
       role="tab"
       aria-selected={activeTab === 'files'}
@@ -164,6 +176,42 @@
                 >
                   ✕
                 </button>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    {/if}
+
+    <!-- Live Variable Watch Tab -->
+    {#if activeTab === 'watch'}
+      <div class="space-y-2.5">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-[11px] font-bold text-m3-outline uppercase tracking-wider">Live Variable Watch</span>
+          {#if $consoleStore.isRunning}
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              Live
+            </span>
+          {/if}
+        </div>
+
+        {#if Object.keys($consoleStore.watchedVariables).length === 0}
+          <div class="text-m3-outline text-center py-8 text-xs">
+            No active runtime variables yet.<br />Run a program in step or timed mode to watch variables update in real-time.
+          </div>
+        {:else}
+          <div class="space-y-1.5 font-mono text-xs">
+            {#each Object.entries($consoleStore.watchedVariables) as [varName, varVal]}
+              <div class="p-2.5 rounded-2xl bg-surface-container border border-surface-container-high flex flex-col gap-1 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-m3-primary">{varName}</span>
+                  <span class="text-[10px] text-m3-outline uppercase font-sans">
+                    {Array.isArray(varVal) ? `Array(${varVal.length})` : typeof varVal}
+                  </span>
+                </div>
+                <div class="text-[11px] text-m3-on-surface bg-surface-dim p-1.5 rounded-lg overflow-x-auto whitespace-pre-wrap break-all border border-surface-container-highest">
+                  {typeof varVal === 'object' ? JSON.stringify(varVal) : String(varVal)}
+                </div>
               </div>
             {/each}
           </div>

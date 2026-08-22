@@ -72,7 +72,7 @@ printCall
     ;
 
 funCall
-    : Identifier Lparen params Rparen
+    : Identifier Lparen params? Rparen
     ;
 
 block
@@ -93,6 +93,8 @@ expr
     | expr op=(Add_Assign | Sub_Assign | Mul_Assign | Div_Assign | Mod_Assign) expr           #assignAction
     | expr And expr                                                                           #logicalAnd
     | expr Or expr                                                                            #logicalOr
+    | expr Lbracket expr Rbracket                                                             #indexAccess
+    | Lbracket (expr (Comma expr)*)? Rbracket                                                 #arrayLiteral
     | Integer                                                                                 #intLiteral
     | Double                                                                                  #doubleLiteral
     | String                                                                                  #stringLiteral
@@ -104,7 +106,8 @@ expr
     ;
 
 assignment
-    : Identifier Assign (expr | funCall)
+    : Identifier Lbracket expr Rbracket Assign (expr | funCall)                               #arrayAssignment
+    | Identifier Assign (expr | funCall)                                                      #variableAssignment
     ;
 
 
@@ -112,6 +115,8 @@ Lparen: '(';
 Rparen: ')';
 Lbrace: '{';
 Rbrace: '}';
+Lbracket: '[';
+Rbracket: ']';
 Comma: ',';
 Colon: ':';
 Semicolon: ';';
@@ -173,7 +178,7 @@ Comment
     ;
 
 Identifier
-    : [a-zA-Z][a-zA-Z0-9]*
+    : [a-zA-Z_][a-zA-Z0-9_]*
     ;
 
 fragment Digit

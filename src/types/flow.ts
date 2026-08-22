@@ -6,16 +6,20 @@ export type Category =
   | 'start' 
   | 'void' 
   | 'math' 
+  | 'string'
   | 'logic' 
   | 'conditional' 
   | 'loop' 
   | 'variable' 
-  | 'function';
+  | 'function'
+  | 'array'
+  | 'timing'
+  | 'comment';
 
 export interface PortData {
   id: string;
   title?: string | null;
-  value?: string | number | boolean;
+  value?: string | number | boolean | any[];
   dataType?: DataType;
   order?: number;
 }
@@ -23,9 +27,11 @@ export interface PortData {
 export interface NodeData {
   id: string;
   title: string;
-  type: 'core' | 'variable' | 'function';
+  type: 'core' | 'variable' | 'function' | 'comment';
   category: Category;
   width: number;
+  height?: number;
+  commentText?: string;
   position?: { x: number; y: number };
   previous: Record<string | number, PortData>;
   next: Record<string | number, PortData>;

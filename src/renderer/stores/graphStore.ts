@@ -17,6 +17,7 @@ export interface GraphState {
   variables: VariableData[];
   functions: FunctionData[];
   selectedNodeId: string | null;
+  selectedNodeIds: string[];
   activeScope: ActiveScope;
   history: { nodes: NodeData[]; wires: WireData[] }[];
   historyIndex: number;
@@ -36,6 +37,7 @@ const initialState: GraphState = {
   variables: [],
   functions: [],
   selectedNodeId: null,
+  selectedNodeIds: [],
   activeScope: { type: 'main' },
   history: [],
   historyIndex: -1,
@@ -354,7 +356,106 @@ function createGraphStore() {
     },
 
     selectNode: (nodeId: string | null) => {
-      update((s) => ({ ...s, selectedNodeId: nodeId }));
+      update((s) => ({
+        ...s,
+        selectedNodeId: nodeId,
+        selectedNodeIds: nodeId ? [nodeId] : [],
+      }));
+    },
+
+    selectNodes: (nodeIds: string[]) => {
+      update((s) => ({
+        ...s,
+        selectedNodeIds: nodeIds,
+        selectedNodeId: nodeIds.length > 0 ? nodeIds[0] : null,
+      }));
+    },
+
+    updateNodesPosition: (moves: { nodeId: string; position: { x: number; y: number } }[]) => {
+      update((s) => {
+        const moveMap = new Map(moves.map((m) => [m.nodeId, m.position]));
+        const newNodes = s.nodes.map((n) => {
+          const pos = moveMap.get(n.id);
+          return pos ? { ...n, position: pos } : n;
+        });
+        const synced = syncScope(s, newNodes, s.wires);
+        return {
+          ...s,
+          ...synced,
+        };
+      });
+    },
+
+    setCommentText: (nodeId: string, text: string) => {
+      update((s) => {
+        const newNodes = s.nodes.map((n) => (n.id === nodeId ? { ...n, commentText: text } : n));
+        const synced = syncScope(s, newNodes, s.wires);
+        return {
+          ...s,
+          ...synced,
+        };
+      });
+    },
+
+    duplicateSelectedNodes: () => {
+      update((s) => {
+        const targetIds = s.selectedNodeIds.length > 0 ? s.selectedNodeIds : (s.selectedNodeId ? [s.selectedNodeId] : []);
+        if (targetIds.length === 0) return s;
+
+        const clonedNodes: NodeData[] = [];
+        const newSelectedIds: string[] = [];
+
+        targetIds.forEach((id) => {
+          const original = s.nodes.find((n) => n.id === id);
+          if (!original || original.category === 'start') return;
+
+          const clone: NodeData = JSON.parse(JSON.stringify(original));
+          clone.id = `${clone.type || 'node'}_${nanoid(6)}`;
+          clone.position = {
+            x: (original.position?.x ?? 100) + 40,
+            y: (original.position?.y ?? 100) + 40,
+          };
+
+          // Regenerate all port IDs on cloned node
+          if (clone.previous) {
+            Object.keys(clone.previous).forEach((k) => {
+              clone.previous![k].id = `port_${nanoid(8)}`;
+            });
+          }
+          if (clone.next) {
+            Object.keys(clone.next).forEach((k) => {
+              clone.next![k].id = `port_${nanoid(8)}`;
+            });
+          }
+          if (clone.input) {
+            Object.keys(clone.input).forEach((k) => {
+              clone.input![k].id = `port_${nanoid(8)}`;
+            });
+          }
+          if (clone.output) {
+            Object.keys(clone.output).forEach((k) => {
+              clone.output![k].id = `port_${nanoid(8)}`;
+            });
+          }
+
+          clonedNodes.push(clone);
+          newSelectedIds.push(clone.id);
+        });
+
+        if (clonedNodes.length === 0) return s;
+
+        const newNodes = [...s.nodes, ...clonedNodes];
+        const synced = syncScope(s, newNodes, s.wires);
+        const hist = pushHistory(s);
+
+        return {
+          ...s,
+          ...synced,
+          ...hist,
+          selectedNodeIds: newSelectedIds,
+          selectedNodeId: newSelectedIds[0] ?? null,
+        };
+      });
     },
 
     undo: () => {
@@ -398,6 +499,7 @@ function createGraphStore() {
         variables: fileData.variables || [],
         functions,
         selectedNodeId: null,
+        selectedNodeIds: [],
         activeScope: { type: 'main' },
         history: [],
         historyIndex: -1,

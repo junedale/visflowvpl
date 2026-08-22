@@ -25,8 +25,10 @@ import { ReturnStatementContext } from "./VisLangParser.js";
 import { IdentifierContext } from "./VisLangParser.js";
 import { BinaryMulContext } from "./VisLangParser.js";
 import { ComparisonContext } from "./VisLangParser.js";
+import { ArrayLiteralContext } from "./VisLangParser.js";
 import { IntLiteralContext } from "./VisLangParser.js";
 import { LogicalAndContext } from "./VisLangParser.js";
+import { IndexAccessContext } from "./VisLangParser.js";
 import { FunCallExprContext } from "./VisLangParser.js";
 import { AssignActionContext } from "./VisLangParser.js";
 import { NullContext } from "./VisLangParser.js";
@@ -39,7 +41,8 @@ import { BooleanLiteralContext } from "./VisLangParser.js";
 import { EqualityContext } from "./VisLangParser.js";
 import { UnaryNotContext } from "./VisLangParser.js";
 import { BinaryAddContext } from "./VisLangParser.js";
-import { AssignmentContext } from "./VisLangParser.js";
+import { ArrayAssignmentContext } from "./VisLangParser.js";
+import { VariableAssignmentContext } from "./VisLangParser.js";
 
 
 /**
@@ -188,6 +191,13 @@ export class VisLangVisitor<Result> extends AbstractParseTreeVisitor<Result> {
      */
     visitComparison?: (ctx: ComparisonContext) => Result;
     /**
+     * Visit a parse tree produced by the `arrayLiteral`
+     * labeled alternative in `VisLangParser.expr`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitArrayLiteral?: (ctx: ArrayLiteralContext) => Result;
+    /**
      * Visit a parse tree produced by the `intLiteral`
      * labeled alternative in `VisLangParser.expr`.
      * @param ctx the parse tree
@@ -201,6 +211,13 @@ export class VisLangVisitor<Result> extends AbstractParseTreeVisitor<Result> {
      * @return the visitor result
      */
     visitLogicalAnd?: (ctx: LogicalAndContext) => Result;
+    /**
+     * Visit a parse tree produced by the `indexAccess`
+     * labeled alternative in `VisLangParser.expr`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitIndexAccess?: (ctx: IndexAccessContext) => Result;
     /**
      * Visit a parse tree produced by the `funCallExpr`
      * labeled alternative in `VisLangParser.expr`.
@@ -286,10 +303,18 @@ export class VisLangVisitor<Result> extends AbstractParseTreeVisitor<Result> {
      */
     visitBinaryAdd?: (ctx: BinaryAddContext) => Result;
     /**
-     * Visit a parse tree produced by `VisLangParser.assignment`.
+     * Visit a parse tree produced by the `arrayAssignment`
+     * labeled alternative in `VisLangParser.assignment`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitAssignment?: (ctx: AssignmentContext) => Result;
+    visitArrayAssignment?: (ctx: ArrayAssignmentContext) => Result;
+    /**
+     * Visit a parse tree produced by the `variableAssignment`
+     * labeled alternative in `VisLangParser.assignment`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitVariableAssignment?: (ctx: VariableAssignmentContext) => Result;
 }
 

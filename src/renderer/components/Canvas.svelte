@@ -1,14 +1,22 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { graphStore } from '../stores/graphStore.js';
+  import { consoleStore } from '../stores/consoleStore.js';
   import { StageManager } from '../../canvas/stageManager.js';
   import type { WireData } from '../../types/flow.js';
+  import ContextMenu from './ContextMenu.svelte';
 
   let canvasContainer: HTMLDivElement;
   let stageManager: StageManager | null = null;
-  let unsubscribe: (() => void) | null = null;
+  let unsubscribeGraph: (() => void) | null = null;
+  let unsubscribeConsole: (() => void) | null = null;
 
   let lastRenderSignature = '';
+  let contextMenuData: {
+    screenPos: { x: number; y: number };
+    canvasPos: { x: number; y: number };
+    connectingPort?: any;
+  } | null = null;
 
   export function zoomIn() {
     stageManager?.zoomIn();
@@ -37,8 +45,15 @@
       onNodeMove: (nodeId, pos) => {
         graphStore.updateNodePosition(nodeId, pos);
       },
-      onNodeSelect: (nodeId) => {
-        graphStore.selectNode(nodeId);
+      onNodesMove: (moves) => {
+        graphStore.updateNodesPosition(moves);
+      },
+      onNodeSelect: (nodeId, multiIds) => {
+        if (multiIds && multiIds.length > 1) {
+          graphStore.selectNodes(multiIds);
+        } else {
+          graphStore.selectNode(nodeId);
+        }
       },
       onWireCreate: (wire: WireData) => {
         graphStore.createWire(wire);
@@ -52,15 +67,25 @@
       onFunctionEdit: (funName: string) => {
         graphStore.openFunction(funName);
       },
+      onCommentChange: (nodeId, text) => {
+        graphStore.setCommentText(nodeId, text);
+      },
+      onContextMenu: (screenPos, canvasPos) => {
+        contextMenuData = { screenPos, canvasPos };
+      },
+      onWireDropOnCanvas: (screenPos, canvasPos, connectingPort) => {
+        contextMenuData = { screenPos, canvasPos, connectingPort };
+      },
     });
 
-    unsubscribe = graphStore.subscribe((state) => {
+    unsubscribeGraph = graphStore.subscribe((state) => {
       if (!stageManager) return;
 
       const scopeKey = state.activeScope.type === 'main' ? 'main' : `fn:${state.activeScope.name}`;
-      const nodeIds = state.nodes.map((n) => `${n.id}:${n.position?.x ?? 0}:${n.position?.y ?? 0}`).join('|');
+      const nodeIds = state.nodes.map((n) => `${n.id}:${n.position?.x ?? 0}:${n.position?.y ?? 0}:${n.commentText ?? ''}`).join('|');
       const wireIds = state.wires.map((w) => `${w.id}:${w.originPortId}->${w.targetPortId}`).join('|');
-      const currentSignature = `${scopeKey}__${nodeIds}__${wireIds}`;
+      const portVals = state.nodes.map((n) => Object.values(n.input || {}).map((p) => `${p.id}:${p.value}`).join(',')).join('|');
+      const currentSignature = `${scopeKey}__${nodeIds}__${wireIds}__${portVals}`;
 
       if (currentSignature !== lastRenderSignature) {
         lastRenderSignature = currentSignature;
@@ -68,19 +93,27 @@
       }
     });
 
+    unsubscribeConsole = consoleStore.subscribe((cState) => {
+      if (!stageManager) return;
+      stageManager.highlightNode(cState.activeNodeId);
+      stageManager.setExecuting(cState.isRunning);
+    });
+
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      // Canvas shortcuts must never steal keystrokes from forms or inline editors.
       if (target?.closest('input, textarea, select, [contenteditable="true"]')) {
         return;
       }
 
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        const selectedId = $graphStore.selectedNodeId;
-        if (selectedId && window.confirm('Delete the selected node and its connections? You can undo this action.')) {
-          graphStore.removeNode(selectedId);
+        const selectedIds = $graphStore.selectedNodeIds.length > 0 ? $graphStore.selectedNodeIds : ($graphStore.selectedNodeId ? [$graphStore.selectedNodeId] : []);
+        if (selectedIds.length > 0) {
+          selectedIds.forEach((id) => graphStore.removeNode(id));
         }
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        graphStore.duplicateSelectedNodes();
       } else if (e.ctrlKey && e.key.toLowerCase() === 'z') {
         e.preventDefault();
         if (e.shiftKey) {
@@ -102,7 +135,8 @@
   });
 
   onDestroy(() => {
-    unsubscribe?.();
+    unsubscribeGraph?.();
+    unsubscribeConsole?.();
     stageManager?.destroy();
   });
 </script>
@@ -123,8 +157,17 @@
       </div>
       <div class="text-base font-semibold text-m3-on-surface mb-1">Canvas is empty</div>
         <div class="text-xs text-m3-outline max-w-xs">
-         Choose a node from the palette, then connect its ports to build your visual program.
+         Right-click anywhere to quick-add, or drag a node from the palette.
       </div>
     </div>
+  {/if}
+
+  {#if contextMenuData}
+    <ContextMenu
+      screenPos={contextMenuData.screenPos}
+      canvasPos={contextMenuData.canvasPos}
+      connectingPort={contextMenuData.connectingPort}
+      onClose={() => (contextMenuData = null)}
+    />
   {/if}
 </div>

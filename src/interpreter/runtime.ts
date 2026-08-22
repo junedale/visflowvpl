@@ -25,7 +25,7 @@ export interface ExecutionResult {
   executionTimeMs: number;
 }
 
-export function executeVisLang(code: string, options: EvaluatorOptions = {}): ExecutionResult {
+export async function executeVisLang(code: string, options: EvaluatorOptions = {}): Promise<ExecutionResult> {
   const output: string[] = [];
   const errors: string[] = [];
   const startTime = performance.now();
@@ -71,7 +71,7 @@ export function executeVisLang(code: string, options: EvaluatorOptions = {}): Ex
       onPrintln: handlePrintln,
     });
 
-    evaluator.visit(tree);
+    await evaluator.visit(tree);
 
     return {
       success: true,
