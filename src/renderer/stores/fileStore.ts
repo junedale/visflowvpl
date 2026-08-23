@@ -16,6 +16,11 @@ const initialState: FileState = {
   isDirty: false,
 };
 
+function graphSignature() {
+  const graph = get(graphStore);
+  return JSON.stringify({ nodes: graph.mainNodes, wires: graph.mainWires, variables: graph.variables, functions: graph.functions });
+}
+
 declare global {
   interface Window {
     VisFlow?: {
@@ -29,6 +34,17 @@ declare global {
 
 function createFileStore() {
   const { subscribe, set, update } = writable<FileState>(initialState);
+  let cleanGraphSignature = graphSignature();
+
+  graphStore.subscribe(() => {
+    const isDirty = graphSignature() !== cleanGraphSignature;
+    update((state) => (state.isDirty === isDirty ? state : { ...state, isDirty }));
+  });
+
+  function markClean() {
+    cleanGraphSignature = graphSignature();
+    update((state) => ({ ...state, isDirty: false }));
+  }
 
   return {
     subscribe,
@@ -59,8 +75,8 @@ function createFileStore() {
           update((s) => ({
             ...s,
             currentFileName: fileName,
-            isDirty: false,
           }));
+          markClean();
         }
       } catch (err) {
         console.error('Failed to open file:', err);
@@ -98,7 +114,7 @@ function createFileStore() {
         URL.revokeObjectURL(url);
       }
 
-      update((s) => ({ ...s, isDirty: false }));
+      markClean();
     },
 
     newFile: async (fileName: string) => {
@@ -119,8 +135,8 @@ function createFileStore() {
             ...s,
             currentFileName: safeName,
             fileList: updatedFiles.filter((f) => f.fileName.endsWith('.visflow')),
-            isDirty: false,
           }));
+          markClean();
           return;
         }
       }
@@ -128,8 +144,8 @@ function createFileStore() {
       update((s) => ({
         ...s,
         currentFileName: safeName,
-        isDirty: false,
       }));
+      markClean();
     },
   };
 }

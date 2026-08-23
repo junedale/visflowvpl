@@ -1,13 +1,15 @@
 <script lang="ts">
   import { afterUpdate } from 'svelte';
   import { consoleStore } from '../stores/consoleStore.js';
+  import { diagnosticsStore } from '../stores/diagnosticsStore.js';
   import { drawingStore } from '../stores/drawingStore.js';
   import { showToast } from '../stores/toastStore.js';
   import { globalRunner } from '../../interpreter/runner.js';
   import DrawingCanvas from './DrawingCanvas.svelte';
 
-  type BottomTab = 'terminal' | 'drawing' | 'watch';
-  let activeTab: BottomTab = 'terminal';
+  export let onFocusDiagnostic: (nodeId: string) => void = () => {};
+  export let height = 288;
+  let activeTab = 'terminal';
 
   let logContainer: HTMLDivElement;
   let userInputValue = '';
@@ -25,8 +27,10 @@
 
   // Automatically switch to drawing canvas tab if turtle drawing commands are executing
   $: if ($drawingStore.commands.length > 0 && activeTab === 'terminal' && $consoleStore.isRunning) {
-    activeTab = 'drawing';
+    consoleStore.setDockTab('drawing');
   }
+
+  $: activeTab = $consoleStore.activeDockTab;
 
   function handleInputSubmit() {
     const val = userInputValue;
@@ -44,13 +48,13 @@
 </script>
 
 {#if $consoleStore.isOpen}
-  <div class="h-72 min-h-[220px] bg-surface-container border-t border-surface-container-high flex flex-col z-30 shadow-m3-4 select-none">
+  <div class="min-h-[180px] bg-surface-container border-t border-surface-container-high flex flex-col z-30 shadow-m3-4 select-none" style:height={`${height}px`}>
     <!-- Header with Tabs -->
     <div class="h-10 px-3 flex items-center justify-between border-b border-surface-container-high bg-surface-container-low/90">
       <div class="flex items-center gap-1">
         <button
           class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 {activeTab === 'terminal' ? 'bg-m3-primary text-m3-on-primary shadow-sm' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
-          on:click={() => (activeTab = 'terminal')}
+          on:click={() => consoleStore.setDockTab('terminal')}
         >
           <span>💬</span>
           <span>Terminal</span>
@@ -61,7 +65,7 @@
 
         <button
           class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 {activeTab === 'drawing' ? 'bg-m3-primary text-m3-on-primary shadow-sm' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
-          on:click={() => (activeTab = 'drawing')}
+          on:click={() => consoleStore.setDockTab('drawing')}
         >
           <span>🎨</span>
           <span>Turtle Canvas</span>
@@ -74,13 +78,25 @@
 
         <button
           class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 {activeTab === 'watch' ? 'bg-m3-primary text-m3-on-primary shadow-sm' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
-          on:click={() => (activeTab = 'watch')}
+          on:click={() => consoleStore.setDockTab('watch')}
         >
           <span>👁</span>
           <span>Live Watch</span>
           {#if Object.keys($consoleStore.watchedVariables).length > 0}
             <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-400/20 text-emerald-300 font-mono">
               {Object.keys($consoleStore.watchedVariables).length}
+            </span>
+          {/if}
+        </button>
+
+        <button
+          class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 {activeTab === 'problems' ? 'bg-m3-primary text-m3-on-primary shadow-sm' : 'text-m3-on-surface-variant hover:text-m3-on-surface hover:bg-surface-container-high'}"
+          on:click={() => consoleStore.setDockTab('problems')}
+        >
+          <span>Problems</span>
+          {#if $diagnosticsStore.errorCount + $diagnosticsStore.warningCount > 0}
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] {$diagnosticsStore.errorCount > 0 ? 'bg-m3-error/20 text-m3-error' : 'bg-amber-500/20 text-amber-300'}">
+              {$diagnosticsStore.errorCount + $diagnosticsStore.warningCount}
             </span>
           {/if}
         </button>
@@ -206,6 +222,26 @@
         {/if}
       </div>
     {/if}
+
+    {#if activeTab === 'problems'}
+      <div class="flex-1 p-3 overflow-y-auto bg-surface-dim text-xs">
+        {#if $diagnosticsStore.issues.length === 0}
+          <div class="text-m3-tertiary text-center py-6">Graph looks good. No problems found.</div>
+        {:else}
+          <div class="space-y-2">
+            {#each $diagnosticsStore.issues as issue (issue.id)}
+              <button
+                class="w-full rounded-xl border p-3 text-left transition-colors {issue.type === 'error' ? 'bg-m3-error/10 border-m3-error/30 hover:bg-m3-error/15' : 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/15'}"
+                on:click={() => issue.nodeId && onFocusDiagnostic(issue.nodeId)}
+                disabled={!issue.nodeId}
+              >
+                <div class="flex items-center gap-2"><span class="font-semibold {issue.type === 'error' ? 'text-m3-error' : 'text-amber-300'}">{issue.type === 'error' ? 'Error' : 'Warning'}</span><span class="text-m3-on-surface">{issue.message}</span></div>
+                {#if issue.suggestion}<p class="mt-1 text-m3-on-surface-variant">{issue.suggestion}</p>{/if}
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 {/if}
-

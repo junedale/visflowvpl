@@ -7,6 +7,8 @@ export interface ConsoleLog {
   timestamp: string;
 }
 
+export type DockTab = 'terminal' | 'drawing' | 'watch' | 'problems';
+
 export interface ConsoleState {
   isOpen: boolean;
   isRunning: boolean;
@@ -19,6 +21,7 @@ export interface ConsoleState {
   logs: ConsoleLog[];
   executionTime: number;
   lastGeneratedCode: string;
+  activeDockTab: DockTab;
 }
 
 const initialState: ConsoleState = {
@@ -33,6 +36,7 @@ const initialState: ConsoleState = {
   logs: [],
   executionTime: 0,
   lastGeneratedCode: '',
+  activeDockTab: 'terminal',
 };
 
 function createConsoleStore() {
@@ -47,6 +51,14 @@ function createConsoleStore() {
       update((s) => ({ ...s, isOpen: open !== undefined ? open : !s.isOpen }));
     },
 
+    openDock: (tab: DockTab) => {
+      update((s) => ({ ...s, isOpen: true, activeDockTab: tab }));
+    },
+
+    setDockTab: (tab: DockTab) => {
+      update((s) => ({ ...s, activeDockTab: tab }));
+    },
+
     setRunning: (running: boolean) => {
       update((s) => ({
         ...s,
@@ -54,7 +66,8 @@ function createConsoleStore() {
         isPaused: false,
         activeNodeId: running ? s.activeNodeId : null,
         awaitingInput: running ? s.awaitingInput : false,
-        isOpen: running ? true : s.isOpen,
+        // Running a beginner's program should not unexpectedly replace their canvas.
+        isOpen: s.isOpen,
       }));
     },
 

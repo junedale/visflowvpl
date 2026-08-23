@@ -10,6 +10,8 @@
   type SidebarTab = 'palette' | 'variables' | 'watch' | 'functions' | 'files';
   let activeTab: SidebarTab = 'palette';
   export let collapsed = false;
+  export let width = 288;
+  export let onCollapseChange: (collapsed: boolean) => void = () => {};
   let nodeSearch = '';
   let collapsedCategories = new Set<string>();
 
@@ -38,16 +40,16 @@
   }
 </script>
 
-<aside class="{collapsed ? 'w-12 min-w-12' : 'w-72 min-w-72'} h-full bg-surface-container-low border-r border-surface-container flex flex-col z-20 select-none transition-[width] duration-200">
+<aside class="h-full bg-surface-container-low border-r border-surface-container flex flex-col z-20 select-none transition-[width] duration-200" style:width={`${collapsed ? 48 : width}px`}>
   {#if collapsed}
-    <button class="m-2 w-8 h-8 rounded-xl text-m3-primary hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary" on:click={() => (collapsed = false)} aria-label="Expand palette" title="Expand palette">›</button>
-    <div class="mt-2 flex flex-col items-center gap-3 text-[10px] font-bold text-m3-outline">
+    <button class="m-2 w-8 h-8 rounded-xl text-m3-primary hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary" on:click={() => onCollapseChange(false)} aria-label="Expand palette" title="Expand palette">›</button>
+    <div class="mt-2 flex flex-col items-center gap-3 text-[18px] font-bold text-m3-outline">
       <span title="Nodes">◈</span><span title="Variables">V</span><span title="Live Watch">👁</span><span title="Functions">ƒ</span><span title="Files">□</span>
     </div>
   {:else}
   <div class="h-11 px-3 flex items-center justify-between border-b border-surface-container-high">
     <span class="text-xs font-semibold text-m3-on-surface">Build & Debug</span>
-    <button class="w-7 h-7 rounded-lg text-m3-outline hover:text-m3-on-surface hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary" on:click={() => (collapsed = true)} aria-label="Collapse palette" title="Collapse palette">‹</button>
+     <button class="w-7 h-7 rounded-lg text-m3-outline hover:text-m3-on-surface hover:bg-surface-container-high focus-visible:outline focus-visible:outline-2 focus-visible:outline-m3-primary" on:click={() => onCollapseChange(true)} aria-label="Collapse palette" title="Collapse palette">‹</button>
   </div>
   <!-- Tab Navigation -->
   <div class="p-1.5 border-b border-surface-container bg-surface-container/60 flex items-center gap-0.5" role="tablist" aria-label="Workspace panels">

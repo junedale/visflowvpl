@@ -19,41 +19,41 @@
 
 </div>
 
-## 🌟 Key Features
+## Key Features
 
-### 🎨 1. Turtle Graphics & Vector Art Canvas
+### 1. Turtle Graphics & Vector Art Canvas
 - **Procedural 2D Drawing**: Move, turn, and draw on a dedicated 2D vector graphics canvas using standard Turtle commands (`Forward`, `Backward`, `Turn Right/Left`, `Pen Up/Down`, `Pen Color`, `Pen Size`).
 - **Geometric Primitives**: Built-in `Draw Circle`, `Draw Rect`, `Clear Canvas`, and `Reset Turtle` nodes.
 - **Interactive Viewport**: Zoom, pan, inspect coordinates in real time, and export artworks with 1-click **Save PNG**.
 
-### 🎵 2. WebAudio Synthesizer & Sound FX
+### 2. WebAudio Synthesizer & Sound FX
 - **Musical Notes**: Play pitch notes with customizable octave and duration (`C4`, `E4`, `G4`, `A5`, etc.).
 - **Frequency Tones**: Play raw frequency tones (Hz) with sine, square, sawtooth, or triangle waveforms.
 - **Procedural Retro SFX**: Built-in 8-bit sound effects (`coin`, `laser`, `jump`, `win`, `explosion`, `pop`).
 
-### ⚡ 3. Visual Flow Electricity & Smart Wire-Drop
+### 3. Visual Flow Electricity & Smart Wire-Drop
 - **Animated Wire Electricity**: Glowing electric particle pulses travel along active wires during program execution.
 - **Smart Wire-Drop Quick-Connect**: Drag any port onto empty canvas space to open a context search palette pre-filtered for compatible connections, automatically creating and wiring the new node upon selection.
 - **Intelligent Snapping**: Ports highlight and snap within range with real-time data-type compatibility checks.
 
-### 📐 4. Hierarchical Auto-Layout Beautifier
-- **1-Click Graph Beautification**: Automatically organizes messy spaghetti nodes into tidy left-to-right hierarchical columns with uniform grid spacing via the `📐 Beautify` button or <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd>.
+### 4. Hierarchical Auto-Layout Beautifier
+- **1-Click Graph Beautification**: Automatically organizes messy spaghetti nodes into tidy left-to-right hierarchical columns with uniform grid spacing via the `Beautify` button or <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd>.
 
-### 🐞 5. Multi-Speed Debugger & Live Variable Watch
-- **Execution Speeds**: Run at `⚡ Instant`, `🐇 100ms`, `⏱ 300ms`, `🐢 800ms`, or `⏭ Step-by-Step`.
+### 5. Multi-Speed Debugger & Live Variable Watch
+- **Execution Speeds**: Run at `Instant`, `100ms`, `300ms`, `800ms`, or `Step-by-Step`.
 - **Live Node Highlighting**: Follow along as execution flows through each branch of your visual logic.
 - **Live Variable Watch**: Real-time inspector grid showing current values, types, and array contents.
 
-### ✨ 6. Starter Examples & Mini-Game Gallery
+### 6. Starter Examples & Mini-Game Gallery
 1-click playable example projects built right into the app:
-- 🌀 **Rainbow Spiral Mandala**: Generative geometry using loops and turtle graphics.
-- 🎹 **8-Bit Retro Melody Arpeggiator**: Chiptune music using WebAudio note arrays.
-- 🎯 **Number Guessing Mini-Game**: Interactive terminal game with random numbers and victory sound effects.
-- 📊 **Array Operations & Length Inspector**: List manipulation, indexing, and formatted output.
+- **Rainbow Spiral Mandala**: Generative geometry using loops and turtle graphics.
+- **8-Bit Retro Melody Arpeggiator**: Chiptune music using WebAudio note arrays.
+- **Number Guessing Mini-Game**: Interactive terminal game with random numbers and victory sound effects.
+- **Array Operations & Length Inspector**: List manipulation, indexing, and formatted output.
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ```
                                ┌─────────────────────────────┐
@@ -80,7 +80,7 @@
               │                               │
               ▼                               ▼
 ┌───────────────────────────┐      ┌─────────────────────────┐
-│  🎨 Turtle Drawing Canvas │      │  🎵 WebAudio Synth      │
+│  Turtle Drawing Canvas   │      │  WebAudio Synth         │
 │  (drawingStore)           │      │  (audioService)         │
 └───────────────────────────┘      └─────────────────────────┘
 ```
@@ -92,7 +92,7 @@
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (version 18 or higher recommended)
@@ -124,7 +124,7 @@
 
 ---
 
-## 🧪 Testing & Verification
+## Testing & Verification
 
 VisFlow includes an automated unit and runtime test suite powered by [Vitest](https://vitest.dev/):
 
@@ -141,7 +141,7 @@ npm run build
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 | :--- | :--- |
@@ -159,7 +159,7 @@ npm run build
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 visflowvpl/
@@ -194,6 +194,6 @@ visflowvpl/
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).

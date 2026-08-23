@@ -1,10 +1,11 @@
 <script lang="ts">
   import { graphStore } from '../stores/graphStore.js';
   import { consoleStore } from '../stores/consoleStore.js';
+  import { debugStore } from '../stores/debugStore.js';
+  import { diagnosticsStore } from '../stores/diagnosticsStore.js';
   import { fileStore } from '../stores/fileStore.js';
   import { showToast } from '../stores/toastStore.js';
   import { CodeGenerator } from '../../compiler/generator.js';
-  import { GraphValidator } from '../../compiler/validator.js';
   import { globalRunner } from '../../interpreter/runner.js';
   import { calculateAutoLayout } from '../../canvas/autoLayout.js';
   import NewFileModal from './modals/NewFileModal.svelte';
@@ -36,6 +37,10 @@
     }
   }
 
+  export function runProgram() { return handleRun(); }
+  export function saveFile() { return handleSave(); }
+  export function beautifyGraph() { handleAutoLayout(); }
+
   function handleSpeedChange(newSpeed: number) {
     selectedSpeed = newSpeed;
     consoleStore.setExecutionSpeed(newSpeed);
@@ -43,6 +48,8 @@
   }
 
   function handleStepNext() {
+    consoleStore.setPaused(false);
+    debugStore.clearPause();
     globalRunner.stepNext();
   }
 
@@ -64,10 +71,11 @@
 
   async function handleRun() {
     const state = $graphStore;
-    const validationIssues = GraphValidator.validate(state.nodes, state.wires, state.variables, state.functions);
+    const validationIssues = diagnosticsStore.refresh(state);
 
     const errors = validationIssues.filter((i) => i.type === 'error');
     if (errors.length > 0) {
+      consoleStore.openDock('problems');
       errors.forEach((e) => showToast(e.message, 'error'));
       return;
     }
@@ -82,6 +90,8 @@
 
     consoleStore.setGeneratedCode(code);
     consoleStore.clear();
+    consoleStore.openDock('terminal');
+    debugStore.clearRun();
     consoleStore.setRunning(true);
     consoleStore.log(`[VisFlow] Starting execution (${selectedSpeed === 0 ? 'Instant' : selectedSpeed === -1 ? 'Step-by-step' : `${selectedSpeed}ms/step`})...`, 'info');
 
@@ -92,6 +102,14 @@
       onNodeStep: (nodeId, env) => {
         consoleStore.setActiveNodeId(nodeId);
         consoleStore.setWatchedVariables(env);
+        debugStore.recordStep(nodeId, env, 'step');
+      },
+      shouldPauseAtNode: (nodeId) => $debugStore.breakpointNodeIds.includes(nodeId),
+      onNodePause: (nodeId, env, reason) => {
+        consoleStore.setActiveNodeId(nodeId);
+        consoleStore.setWatchedVariables(env);
+        consoleStore.setPaused(true);
+        debugStore.recordStep(nodeId, env, reason);
       },
       onVariableChange: (name, val) => {
         consoleStore.setVariableValue(name, val);
@@ -102,6 +120,8 @@
     });
 
     consoleStore.setRunning(false);
+    consoleStore.setPaused(false);
+    debugStore.clearPause();
     consoleStore.setActiveNodeId(null);
     consoleStore.setExecutionTime(result.executionTimeMs);
 
@@ -124,6 +144,8 @@
     globalRunner.stop();
     consoleStore.setRunning(false);
     consoleStore.setActiveNodeId(null);
+    consoleStore.setPaused(false);
+    debugStore.clearPause();
     consoleStore.log(`[VisFlow] Execution stopped by user.`, 'warning');
   }
 </script>
@@ -142,7 +164,7 @@
 
     <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low border border-m3-outline-variant/40 text-xs text-m3-on-surface-variant">
       <span class="w-1.5 h-1.5 rounded-full bg-m3-primary"></span>
-      <span class="font-medium">{$fileStore.currentFileName || 'Untitled.visflow'}</span>
+       <span class="font-medium">{$fileStore.isDirty ? '● ' : ''}{$fileStore.currentFileName || 'Untitled.visflow'}</span>
     </div>
 
     <!-- Breadcrumb Navigation -->

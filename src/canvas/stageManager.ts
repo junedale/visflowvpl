@@ -14,6 +14,7 @@ export interface StageCallbacks {
   onFunctionEdit?: (functionName: string) => void;
   onContextMenu?: (screenPos: { x: number; y: number }, canvasPos: { x: number; y: number }) => void;
   onCommentChange?: (nodeId: string, text: string) => void;
+  onToggleBreakpoint?: (nodeId: string) => void;
   onWireDropOnCanvas?: (
     screenPos: { x: number; y: number },
     canvasPos: { x: number; y: number },
@@ -43,6 +44,7 @@ export class StageManager {
   private wireDataMap: Map<string, WireData> = new Map();
   private portShapes: Map<string, PortEntry> = new Map();
   private portTextMap: Map<string, Konva.Text> = new Map();
+  private inputValueElements: Map<string, { valueRect: Konva.Rect; valueText: Konva.Text; connectedRect: Konva.Rect; connectedText: Konva.Text }> = new Map();
 
   private activeConnectingPort: {
     portId: string;
@@ -66,6 +68,7 @@ export class StageManager {
 
   private highlightedNodeId: string | null = null;
   private highlightRing: Konva.Rect | null = null;
+  private breakpointNodeIds: Set<string> = new Set();
 
   private isGridUpdateScheduled: boolean = false;
   private dirtyWireNodeIds: Set<string> = new Set();
@@ -415,6 +418,7 @@ export class StageManager {
         this.addNodeToCanvas(node);
         nodesChanged = true;
       } else {
+        this.nodeDataMap.set(node.id, node);
         if (node.position && (existingGroup.x() !== node.position.x || existingGroup.y() !== node.position.y)) {
           existingGroup.position({ x: node.position.x, y: node.position.y });
           nodesChanged = true;
@@ -434,6 +438,21 @@ export class StageManager {
             }
           });
         }
+
+        const title = existingGroup.findOne('.node-title') as Konva.Text | undefined;
+        if (title && title.text() !== node.title) {
+          title.text(node.title);
+          nodesChanged = true;
+        }
+
+        const noteBody = existingGroup.findOne('.note-body') as Konva.Text | undefined;
+        if (noteBody) {
+          const comment = node.commentText || 'Double-click to write note...';
+          if (noteBody.text() !== comment) {
+            noteBody.text(comment);
+            nodesChanged = true;
+          }
+        }
       }
     }
 
@@ -452,6 +471,8 @@ export class StageManager {
         wiresChanged = true;
       }
     }
+
+    this.updateInputConnectionStates(newWiresMap);
 
     if (nodesChanged) {
       this.nodeLayer.batchDraw();
@@ -477,6 +498,7 @@ export class StageManager {
       allPorts.forEach((p) => {
         this.portShapes.delete(p.id);
         this.portTextMap.delete(p.id);
+        this.inputValueElements.delete(p.id);
       });
     }
     group.destroy();
@@ -537,6 +559,7 @@ export class StageManager {
       group.add(noteTitle);
 
       const noteBody = new Konva.Text({
+        name: 'note-body',
         text: node.commentText || 'Double-click to write note...',
         fontSize: 11,
         fontFamily: 'Inter, sans-serif',
@@ -596,6 +619,7 @@ export class StageManager {
     group.add(headerRect);
 
     const titleText = new Konva.Text({
+      name: 'node-title',
       text: node.title,
       fontSize: 12,
       fontFamily: 'Inter, sans-serif',
@@ -607,6 +631,33 @@ export class StageManager {
       perfectDrawEnabled: false,
     });
     group.add(titleText);
+
+    const breakpoint = new Konva.Circle({
+      name: 'breakpoint',
+      x: width - 14,
+      y: 12,
+      radius: 5,
+      fill: '#fb7185',
+      stroke: '#fff1f2',
+      strokeWidth: 1.5,
+      opacity: this.breakpointNodeIds.has(node.id) ? 1 : 0.18,
+      perfectDrawEnabled: false,
+    });
+    breakpoint.on('click tap', (e) => {
+      e.cancelBubble = true;
+      this.callbacks.onToggleBreakpoint?.(node.id);
+    });
+    breakpoint.on('mouseenter', () => {
+      document.body.style.cursor = 'pointer';
+      breakpoint.opacity(1);
+      this.nodeLayer.batchDraw();
+    });
+    breakpoint.on('mouseleave', () => {
+      document.body.style.cursor = 'default';
+      breakpoint.opacity(this.breakpointNodeIds.has(node.id) ? 1 : 0.18);
+      this.nodeLayer.batchDraw();
+    });
+    group.add(breakpoint);
 
     if (node.previous) {
       Object.values(node.previous).forEach((port) => {
@@ -701,6 +752,33 @@ export class StageManager {
 
         this.portTextMap.set(port.id, valueText);
 
+        const connectedRect = new Konva.Rect({
+          x: 60,
+          y: yPos - 10,
+          width: valBoxWidth,
+          height: 20,
+          fill: 'rgba(56, 189, 248, 0.14)',
+          stroke: '#38bdf8',
+          strokeWidth: 1,
+          cornerRadius: 5,
+          listening: false,
+          visible: false,
+          perfectDrawEnabled: false,
+        });
+        const connectedText = new Konva.Text({
+          text: 'Connected',
+          fontSize: 10,
+          fontFamily: 'Inter, sans-serif',
+          fontStyle: 'bold',
+          fill: isLightTheme ? '#0369a1' : '#7cd4fd',
+          x: 66,
+          y: yPos - 5,
+          listening: false,
+          visible: false,
+          perfectDrawEnabled: false,
+        });
+        this.inputValueElements.set(port.id, { valueRect, valueText, connectedRect, connectedText });
+
         const handleInputHover = () => {
           group.draggable(false);
           document.body.style.cursor = 'text';
@@ -744,6 +822,8 @@ export class StageManager {
 
         group.add(valueRect);
         group.add(valueText);
+        group.add(connectedRect);
+        group.add(connectedText);
       });
     }
 
@@ -961,6 +1041,16 @@ export class StageManager {
     });
   }
 
+  private updateInputConnectionStates(wires: Map<string, WireData>): void {
+    this.inputValueElements.forEach((elements, portId) => {
+      const isConnected = Array.from(wires.values()).some((wire) => wire.targetPortId === portId);
+      elements.valueRect.visible(!isConnected);
+      elements.valueText.visible(!isConnected);
+      elements.connectedRect.visible(isConnected);
+      elements.connectedText.visible(isConnected);
+    });
+  }
+
   public updateConnectedWires(nodeId: string): void {
     this.wireDataMap.forEach((wire, wireId) => {
       const originEntry = this.portShapes.get(wire.originPortId);
@@ -1009,6 +1099,15 @@ export class StageManager {
 
   public selectNode(nodeId: string | null): void {
     this.selectNodes(nodeId ? [nodeId] : []);
+  }
+
+  public setBreakpoints(nodeIds: string[]): void {
+    this.breakpointNodeIds = new Set(nodeIds);
+    this.nodeGroups.forEach((group, nodeId) => {
+      const marker = group.findOne('.breakpoint') as Konva.Circle | undefined;
+      marker?.opacity(this.breakpointNodeIds.has(nodeId) ? 1 : 0.18);
+    });
+    this.nodeLayer.batchDraw();
   }
 
   public getSelectedNodeIds(): string[] {
@@ -1194,6 +1293,14 @@ export class StageManager {
     return {
       position: { x: this.stage.x(), y: this.stage.y() },
       scale: { x: this.stage.scaleX(), y: this.stage.scaleY() },
+    };
+  }
+
+  public getViewportCenter(): { x: number; y: number } {
+    const scale = this.stage.scaleX();
+    return {
+      x: (this.stage.width() / 2 - this.stage.x()) / scale,
+      y: (this.stage.height() / 2 - this.stage.y()) / scale,
     };
   }
 

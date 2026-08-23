@@ -4,6 +4,8 @@ export interface RunOptions {
   onOutput?: (chunk: string) => void;
   onError?: (error: string) => void;
   onNodeStep?: (nodeId: string, env: Record<string, any>) => void;
+  onNodePause?: (nodeId: string, env: Record<string, any>, reason: 'step' | 'breakpoint') => void;
+  shouldPauseAtNode?: (nodeId: string) => boolean;
   onVariableChange?: (name: string, value: any) => void;
   onPromptInput?: (prompt: string) => void;
   maxIterations?: number;
@@ -44,8 +46,12 @@ export class CodeRunner {
             options.onNodeStep?.(context.name, context.env);
           }
 
-          // Step-by-step manual mode (-1) or paused
-          if (this.currentSpeedMs === -1 || this.isPaused) {
+          const pauseAtBreakpoint = Boolean(context.name && options.shouldPauseAtNode?.(context.name));
+          const pauseForStep = this.currentSpeedMs === -1 || this.isPaused;
+          if (pauseAtBreakpoint || pauseForStep) {
+            if (context.name) {
+              options.onNodePause?.(context.name, context.env, pauseAtBreakpoint ? 'breakpoint' : 'step');
+            }
             await new Promise<void>((resolve) => {
               this.stepResolver = resolve;
             });

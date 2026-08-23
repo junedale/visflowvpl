@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { nanoid } from 'nanoid';
 import { NodeData, WireData, VariableData, FunctionData, VisflowFile, ActiveScope } from '../../types/flow.js';
+import { debugStore } from './debugStore.js';
 import {
   createNodeFromTemplate,
   createVariableNode,
@@ -46,12 +47,14 @@ const initialState: GraphState = {
 function createGraphStore() {
   const { subscribe, set, update } = writable<GraphState>(initialState);
 
-  function pushHistory(state: GraphState) {
+  function pushHistory(state: GraphState, nodes: NodeData[], wires: WireData[]) {
     const maxHistory = 30;
-    const historySlice = state.history.slice(0, state.historyIndex + 1);
+    const historySlice = state.history.length > 0
+      ? state.history.slice(0, state.historyIndex + 1)
+      : [{ nodes: JSON.parse(JSON.stringify(state.nodes)), wires: JSON.parse(JSON.stringify(state.wires)) }];
     const newEntry = {
-      nodes: JSON.parse(JSON.stringify(state.nodes)),
-      wires: JSON.parse(JSON.stringify(state.wires)),
+      nodes: JSON.parse(JSON.stringify(nodes)),
+      wires: JSON.parse(JSON.stringify(wires)),
     };
     return {
       history: [...historySlice, newEntry].slice(-maxHistory),
@@ -135,7 +138,7 @@ function createGraphStore() {
       update((s) => {
         const newNodes = [...s.nodes, newNode];
         const synced = syncScope(s, newNodes, s.wires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, newNodes, s.wires);
         return {
           ...s,
           ...synced,
@@ -150,6 +153,7 @@ function createGraphStore() {
         const nodeToRemove = s.nodes.find((n) => n.id === nodeId);
         // Prevent deleting start or function entry nodes
         if (!nodeToRemove || nodeToRemove.category === 'start') return s;
+        debugStore.removeBreakpointsForNodes([nodeId]);
 
         const portIds = new Set<string>();
         if (nodeToRemove.previous) Object.values(nodeToRemove.previous).forEach((p) => portIds.add(p.id));
@@ -160,7 +164,7 @@ function createGraphStore() {
         const newNodes = s.nodes.filter((n) => n.id !== nodeId);
         const newWires = s.wires.filter((w) => !portIds.has(w.originPortId) && !portIds.has(w.targetPortId));
         const synced = syncScope(s, newNodes, newWires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, newNodes, newWires);
 
         return {
           ...s,
@@ -187,7 +191,7 @@ function createGraphStore() {
         const filteredWires = s.wires.filter((w) => w.targetPortId !== wire.targetPortId);
         const newWires = [...filteredWires, wire];
         const synced = syncScope(s, s.nodes, newWires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, s.nodes, newWires);
         return {
           ...s,
           ...synced,
@@ -200,7 +204,7 @@ function createGraphStore() {
       update((s) => {
         const newWires = s.wires.filter((w) => w.id !== wireId);
         const synced = syncScope(s, s.nodes, newWires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, s.nodes, newWires);
         return {
           ...s,
           ...synced,
@@ -222,9 +226,11 @@ function createGraphStore() {
           return { ...n, input: updatedInput };
         });
         const synced = syncScope(s, newNodes, s.wires);
+        const hist = pushHistory(s, newNodes, s.wires);
         return {
           ...s,
           ...synced,
+          ...hist,
         };
       });
     },
@@ -237,7 +243,7 @@ function createGraphStore() {
         });
         const newNodes = [...s.nodes, varNode];
         const synced = syncScope(s, newNodes, s.wires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, newNodes, s.wires);
         return {
           ...s,
           ...synced,
@@ -259,7 +265,7 @@ function createGraphStore() {
         );
         const newNodes = [...s.nodes, varNode];
         const synced = syncScope(s, newNodes, s.wires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, newNodes, s.wires);
         return {
           ...s,
           ...synced,
@@ -271,8 +277,9 @@ function createGraphStore() {
 
     removeVariable: (name: string) => {
       update((s) => {
-        const hist = pushHistory(s);
         const newNodes = s.nodes.filter((n) => !(n.type === 'variable' && n.title === name));
+        const hist = pushHistory(s, newNodes, s.wires);
+        debugStore.removeBreakpointsForNodes(s.nodes.filter((n) => !newNodes.includes(n)).map((n) => n.id));
         const synced = syncScope(s, newNodes, s.wires);
         return {
           ...s,
@@ -309,7 +316,7 @@ function createGraphStore() {
 
         const newNodes = [...s.nodes, fnNode];
         const synced = syncScope(s, newNodes, s.wires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, newNodes, s.wires);
 
         return {
           ...s,
@@ -331,7 +338,7 @@ function createGraphStore() {
         );
         const newNodes = [...s.nodes, fnNode];
         const synced = syncScope(s, newNodes, s.wires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, newNodes, s.wires);
         return {
           ...s,
           ...synced,
@@ -343,9 +350,10 @@ function createGraphStore() {
 
     removeFunction: (name: string) => {
       update((s) => {
-        const hist = pushHistory(s);
         const newNodes = s.nodes.filter((n) => !(n.type === 'function' && n.title === name));
+        debugStore.removeBreakpointsForNodes(s.nodes.filter((n) => !newNodes.includes(n)).map((n) => n.id));
         const synced = syncScope(s, newNodes, s.wires);
+        const hist = pushHistory(s, newNodes, s.wires);
         return {
           ...s,
           ...synced,
@@ -390,10 +398,23 @@ function createGraphStore() {
       update((s) => {
         const newNodes = s.nodes.map((n) => (n.id === nodeId ? { ...n, commentText: text } : n));
         const synced = syncScope(s, newNodes, s.wires);
+        const hist = pushHistory(s, newNodes, s.wires);
         return {
           ...s,
           ...synced,
+          ...hist,
         };
+      });
+    },
+
+    setNodeTitle: (nodeId: string, title: string) => {
+      const trimmedTitle = title.trim();
+      if (!trimmedTitle) return;
+      update((s) => {
+        const newNodes = s.nodes.map((n) => (n.id === nodeId ? { ...n, title: trimmedTitle } : n));
+        const synced = syncScope(s, newNodes, s.wires);
+        const hist = pushHistory(s, newNodes, s.wires);
+        return { ...s, ...synced, ...hist };
       });
     },
 
@@ -446,7 +467,7 @@ function createGraphStore() {
 
         const newNodes = [...s.nodes, ...clonedNodes];
         const synced = syncScope(s, newNodes, s.wires);
-        const hist = pushHistory(s);
+        const hist = pushHistory(s, newNodes, s.wires);
 
         return {
           ...s,

@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { graphStore } from '../stores/graphStore.js';
   import { consoleStore } from '../stores/consoleStore.js';
+  import { debugStore } from '../stores/debugStore.js';
   import { StageManager } from '../../canvas/stageManager.js';
   import type { WireData } from '../../types/flow.js';
   import ContextMenu from './ContextMenu.svelte';
@@ -10,6 +11,7 @@
   let stageManager: StageManager | null = null;
   let unsubscribeGraph: (() => void) | null = null;
   let unsubscribeConsole: (() => void) | null = null;
+  let unsubscribeDebug: (() => void) | null = null;
 
   let lastRenderSignature = '';
   let contextMenuData: {
@@ -34,6 +36,15 @@
     stageManager?.fitGraph();
   }
 
+  export function focusNode(nodeId: string) {
+    stageManager?.selectNode(nodeId);
+    stageManager?.highlightNode(nodeId, true);
+  }
+
+  export function getViewportCenter() {
+    return stageManager?.getViewportCenter() ?? { x: 280, y: 160 };
+  }
+
   export function getStageTransform() {
     return stageManager?.getTransform() || { position: { x: 0, y: 0 }, scale: { x: 1, y: 1 } };
   }
@@ -49,6 +60,7 @@
         graphStore.updateNodesPosition(moves);
       },
       onNodeSelect: (nodeId, multiIds) => {
+        if (nodeId) debugStore.toggleInspector(true);
         if (multiIds && multiIds.length > 1) {
           graphStore.selectNodes(multiIds);
         } else {
@@ -70,6 +82,9 @@
       onCommentChange: (nodeId, text) => {
         graphStore.setCommentText(nodeId, text);
       },
+      onToggleBreakpoint: (nodeId) => {
+        debugStore.toggleBreakpoint(nodeId);
+      },
       onContextMenu: (screenPos, canvasPos) => {
         contextMenuData = { screenPos, canvasPos };
       },
@@ -82,7 +97,7 @@
       if (!stageManager) return;
 
       const scopeKey = state.activeScope.type === 'main' ? 'main' : `fn:${state.activeScope.name}`;
-      const nodeIds = state.nodes.map((n) => `${n.id}:${n.position?.x ?? 0}:${n.position?.y ?? 0}:${n.commentText ?? ''}`).join('|');
+      const nodeIds = state.nodes.map((n) => `${n.id}:${n.title}:${n.position?.x ?? 0}:${n.position?.y ?? 0}:${n.commentText ?? ''}`).join('|');
       const wireIds = state.wires.map((w) => `${w.id}:${w.originPortId}->${w.targetPortId}`).join('|');
       const portVals = state.nodes.map((n) => Object.values(n.input || {}).map((p) => `${p.id}:${p.value}`).join(',')).join('|');
       const currentSignature = `${scopeKey}__${nodeIds}__${wireIds}__${portVals}`;
@@ -97,6 +112,11 @@
       if (!stageManager) return;
       stageManager.highlightNode(cState.activeNodeId);
       stageManager.setExecuting(cState.isRunning);
+      if (cState.isPaused && cState.activeNodeId) debugStore.toggleInspector(true);
+    });
+
+    unsubscribeDebug = debugStore.subscribe((state) => {
+      stageManager?.setBreakpoints(state.breakpointNodeIds);
     });
 
     // Keyboard shortcuts
@@ -137,6 +157,7 @@
   onDestroy(() => {
     unsubscribeGraph?.();
     unsubscribeConsole?.();
+    unsubscribeDebug?.();
     stageManager?.destroy();
   });
 </script>
